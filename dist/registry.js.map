@@ -1,0 +1,1 @@
+{"version":3,"file":"registry.js","sourceRoot":"","sources":["../src/registry.ts"],"names":[],"mappings":"","sourcesContent":["import Lifestyle from \"./lifestyle\";\n\n// public\ninterface Registry\n{\n    register(key: string, component: Function, lifestyle: Lifestyle): Registry;\n}\n\nexport default Registry;"]}

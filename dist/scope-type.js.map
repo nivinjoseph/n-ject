@@ -1,0 +1,1 @@
+{"version":3,"file":"scope-type.js","sourceRoot":"","sources":["../src/scope-type.ts"],"names":[],"mappings":";;AAAA,SAAS;AACT,IAAK,SAIJ;AAJD,WAAK,SAAS;IAEV,yCAAQ,CAAA;IACR,2CAAS,CAAA;AACb,CAAC,EAJI,SAAS,KAAT,SAAS,QAIb;AAED,kBAAe,SAAS,CAAC","sourcesContent":["// public\nenum ScopeType\n{\n    Root = 1,\n    Child = 2\n}\n\nexport default ScopeType;   "]}
