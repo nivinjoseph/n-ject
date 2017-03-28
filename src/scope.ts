@@ -1,5 +1,6 @@
 import ScopeType from "./scope-type";
 
+// public
 interface Scope
 {
     scopeType: ScopeType;

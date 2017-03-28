@@ -1,3 +1,4 @@
+// public
 enum ScopeType
 {
     Root = 1,

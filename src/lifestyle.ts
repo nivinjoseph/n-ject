@@ -1,3 +1,4 @@
+// public
 enum Lifestyle
 {
     Transient = 1,
