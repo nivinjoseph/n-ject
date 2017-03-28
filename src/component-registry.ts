@@ -1,12 +1,12 @@
 import given from "n-defensive";
 import Lifestyle from "./lifestyle";
 import { ApplicationException } from "n-exception";
-import Registration from "./registration";
+import ComponentRegistration from "./component-registration";
 
 // internal
 export default class ComponentRegistry
 {
-    private readonly _registrations = new Array<Registration>();
+    private readonly _registrations = new Array<ComponentRegistration>();
     private readonly _registry = {};
 
 
@@ -20,7 +20,7 @@ export default class ComponentRegistry
         if (this._registry[key])
             throw new ApplicationException("Duplicate registration for key '{0}'".format(key));
 
-        let registration = new Registration(key, component, lifestyle);
+        let registration = new ComponentRegistration(key, component, lifestyle);
         this._registrations.push(registration);
         this._registry[key] = registration;
     }
@@ -31,7 +31,7 @@ export default class ComponentRegistry
             this.walkDependencyGraph(registration);
     }
 
-    public find(key: string): Registration
+    public find(key: string): ComponentRegistration
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
 
@@ -39,7 +39,7 @@ export default class ComponentRegistry
         return this._registry[key];
     }
 
-    private walkDependencyGraph(registration: Registration, visited: object = {}): void
+    private walkDependencyGraph(registration: ComponentRegistration, visited: object = {}): void
     {
         // check if current is in visited
         // add current to visited

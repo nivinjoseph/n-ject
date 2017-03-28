@@ -5,7 +5,7 @@ import Lifestyle from "./lifestyle";
 import "n-ext";
 import { ApplicationException } from "n-exception";
 import ComponentRegistry from "./component-registry";
-import Registration from "./registration";
+import ComponentRegistration from "./component-registration";
 
 // internal
 abstract class BaseScope implements Scope
@@ -46,7 +46,7 @@ abstract class BaseScope implements Scope
         return this.findInstance(registration) as T;
     }
 
-    private findInstance(registration: Registration): object
+    private findInstance(registration: ComponentRegistration): object
     {
         if (registration.lifestyle === Lifestyle.Singleton)
         {
@@ -69,7 +69,7 @@ abstract class BaseScope implements Scope
         }
     }
 
-    private findScopedInstance(registration: Registration): object
+    private findScopedInstance(registration: ComponentRegistration): object
     {
         if (this._scopedInstanceRegistry[registration.key])
             return this._scopedInstanceRegistry[registration.key];
@@ -81,7 +81,7 @@ abstract class BaseScope implements Scope
         }
     }
 
-    private createInstance(registration: Registration): object
+    private createInstance(registration: ComponentRegistration): object
     {
         let dependencyInstances = [];
         for (let dependency of registration.dependencies)
