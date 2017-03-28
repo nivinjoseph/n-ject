@@ -1,8 +1,8 @@
 enum Lifestyle
 {
-    Singleton = 1,
-    Transient = 2,
-    Scoped = 3
+    Transient = 1,
+    Scoped = 2,
+    Singleton = 3,
 } 
 
 export default Lifestyle;  

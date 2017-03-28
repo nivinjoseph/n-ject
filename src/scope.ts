@@ -3,8 +3,7 @@ import ScopeType from "./scope-type";
 interface Scope
 {
     scopeType: ScopeType;
-    resolve(key: string): object;
-    release(value: object): void;
+    resolve<T extends object>(key: string): T;
 }  
 
 export default Scope;
