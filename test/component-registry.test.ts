@@ -102,4 +102,142 @@ suite("ComponentRegistry", () =>
             });
         });
     }); 
+    suite("Lifestyle Dependency", () =>
+    {
+        suite("Singleton", () =>
+        {
+            test("Singleton to Singleton", () =>
+            {
+                class A { public constructor(b: B) { } }
+                class B { }
+
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.verifyRegistrations();
+                
+                assert.ok(true);
+            });
+            test("Singleton to Singleton - Root", () =>
+            {
+                
+            });
+            test("Singleton to Singleton - Child", () =>
+            {
+
+            });
+            test("Singleton to Scoped", () =>
+            {
+                class A { public constructor(b: B) { } }
+                class B { }
+                
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Scoped);
+                cr.verifyRegistrations();
+
+                assert.ok(true);
+            });
+            test("Singleton to Scoped - Root", () =>
+            {
+
+            });
+            test("Singleton to Scoped - Child", () =>
+            {
+
+            });
+            test("Singleton to Transient", () =>
+            {
+
+            });
+            test("Singleton to Transient - Root", () =>
+            {
+
+            });
+            test("Singleton to Transient - Child", () =>
+            {
+
+            });
+        });
+        
+        suite("Scoped", () =>
+        {
+            test("Scoped to Singleton", () =>
+            {
+
+            });
+            test("Scoped to Singleton - Root", () =>
+            {
+
+            });
+            test("Scoped to Singleton - Child", () =>
+            {
+
+            });
+            test("Scoped to Scoped", () =>
+            {
+
+            });
+            test("Scoped to Scoped - Root", () =>
+            {
+
+            });
+            test("Scoped to Scoped - Child", () =>
+            {
+
+            });
+            test("Scoped to Transient", () =>
+            {
+
+            });
+            test("Scoped to Transient - Root", () =>
+            {
+
+            });
+            test("Scoped to Transient - Child", () =>
+            {
+
+            });
+        });
+        
+        suite("Transient", () =>
+        {
+            test("Transient to Singleton", () =>
+            {
+
+            });
+            test("Transient to Singleton - Root", () =>
+            {
+
+            });
+            test("Transient to Singleton - Child", () =>
+            {
+
+            });
+            test("Transient to Scoped", () =>
+            {
+
+            });
+            test("Transient to Scoped - Root", () =>
+            {
+
+            });
+            test("Transient to Scoped - Child", () =>
+            {
+
+            });
+            test("Transient to Transient", () =>
+            {
+
+            });
+            test("Transient to Transient - Root", () =>
+            {
+
+            });
+            test("Transient to Transient - Child", () =>
+            {
+
+            });
+        });
+    });
 });
