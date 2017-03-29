@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import ComponentRegistry from "./../src/component-registry";
-import Lifestyle from "./../src/lifestyle";
+import { Container, Lifestyle } from "./../src/index";
 
 suite("ComponentRegistry", () =>
 {
@@ -102,141 +102,404 @@ suite("ComponentRegistry", () =>
             });
         });
     }); 
-    suite("Lifestyle Dependency", () =>
+    
+    suite("Lifestyle Registry Dependency", () =>
     {
         suite("Singleton", () =>
         {
-            test("Singleton to Singleton", () =>
+            // Singleton -> Singleton
+            test("Given the singleton to singleton dependency registration should pass", () =>
             {
                 class A { public constructor(b: B) { } }
                 class B { }
 
-                let cr = new ComponentRegistry();
+                let cr = new Container();
                 cr.register("a", A, Lifestyle.Singleton);
                 cr.register("b", B, Lifestyle.Singleton);
-                cr.verifyRegistrations();
-                
+                cr.bootstrap();
                 assert.ok(true);
             });
-            test("Singleton to Singleton - Root", () =>
+            
+            // Singleton -> Singleton - root
+            test("Given the singleton to singleton dependency resolving the root should pass", () =>
             {
-                
-            });
-            test("Singleton to Singleton - Child", () =>
-            {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.bootstrap();
+                cr.resolve("a");
+                assert.ok(true);
             });
-            test("Singleton to Scoped", () =>
+            
+            // Singleton -> Singleton - child
+            test("Given the singleton to singleton dependency resolving the child should pass", () =>
+            {
+                class A { public constructor(b: B) { } }
+                class B { }
+
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.bootstrap();
+                let child = cr.createScope();
+                cr.resolve("a");
+                assert.ok(true);
+            });
+            
+            // Singleton -> Scoped
+            test("Given the singleton to scoped dependency registration should fail", () =>
             {
                 class A { public constructor(b: B) { } }
                 class B { }
                 
+                assert.throws(() =>
+                {
+                    let cr = new ComponentRegistry();
+                    cr.register("a", A, Lifestyle.Singleton);
+                    cr.register("b", B, Lifestyle.Scoped);
+                    cr.verifyRegistrations();
+                });
+            });
+            
+            // Singleton -> Scoped - root
+            test("Given the singleton to scoped dependency resolving the root should fail", () =>
+            {
+                class A { public constructor(b: B) { } }
+                class B { }
+                
+                assert.throws(() =>
+                {
+                    let cr = new Container();
+                    cr.register("a", A, Lifestyle.Singleton);
+                    cr.register("b", B, Lifestyle.Scoped);
+                    cr.bootstrap();
+                    cr.resolve("a");
+                    assert.ok(true);
+                });
+            });
+            
+            // Singleton -> Scoped - child
+            // test("Given the singleton to scoped dependency resolving the root should fail", () =>
+            // {
+            //     class A { public constructor(b: B) { } }
+            //     class B { }
+                
+            //     let cr = new Container();
+            //     cr.register("a", A, Lifestyle.Singleton);
+            //     cr.register("b", B, Lifestyle.Scoped);
+            //     cr.bootstrap();
+            //     cr.createScope();
+            //     assert.ok(true);
+            // });
+            
+            // Singleton -> Transient
+            test("Given the singleton to transient dependency registration should pass", () =>
+            {
+                class A { public constructor(b: B) { } }
+                class B { }
+
                 let cr = new ComponentRegistry();
                 cr.register("a", A, Lifestyle.Singleton);
-                cr.register("b", B, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Transient);
                 cr.verifyRegistrations();
-
                 assert.ok(true);
             });
-            test("Singleton to Scoped - Root", () =>
+            
+            // Singleton -> Transient - root
+            test("Given the singleton to transient dependency resolving the root should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.bootstrap();
+                cr.resolve("a");
+                assert.ok(true);
             });
-            test("Singleton to Scoped - Child", () =>
+            
+            // Singleton -> Transient - child
+            test("Given the singleton to transient dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
-            });
-            test("Singleton to Transient", () =>
-            {
-
-            });
-            test("Singleton to Transient - Root", () =>
-            {
-
-            });
-            test("Singleton to Transient - Child", () =>
-            {
-
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Singleton);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.bootstrap();
+                cr.createScope();
+                assert.ok(true);
             });
         });
         
         suite("Scoped", () =>
-        {
-            test("Scoped to Singleton", () =>
+        {   
+            // Scoped -> Singleton
+            test("Given the scoped to singleton dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Scoped to Singleton - Root", () =>
+            
+            // Scoped -> Singleton - root
+            test("Given the scoped to singleton dependency resolving the root should fail", () =>
             {
-
+                class A { public constructor(b: B) { } }
+                class B { }
+                
+                assert.throws(() =>
+                {
+                    let cr = new Container();
+                    cr.register("a", A, Lifestyle.Scoped);
+                    cr.register("b", B, Lifestyle.Singleton);
+                    cr.bootstrap();
+                    cr.resolve("a");
+                });    
             });
-            test("Scoped to Singleton - Child", () =>
+            
+            // Scoped -> Singleton - child
+            test("Given the scoped to singleton dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
-            test("Scoped to Scoped", () =>
+            
+            // Scoped -> Scoped
+            test("Given the scoped to scoped dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Scoped);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Scoped to Scoped - Root", () =>
+            
+            // Scoped -> Scoped - root
+            test("Given the scoped to scoped dependency resolving the root should fail", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                assert.throws(() =>
+                {
+                    let cr = new Container();
+                    cr.register("a", A, Lifestyle.Scoped);
+                    cr.register("b", B, Lifestyle.Scoped);
+                    cr.bootstrap();
+                    cr.resolve("a");
+                });  
             });
-            test("Scoped to Scoped - Child", () =>
+            
+            // Scoped -> Scoped - child
+            test("Given the scoped to singleton dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Scoped);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
-            test("Scoped to Transient", () =>
+            
+            // Scoped -> Transient
+            test("Given the scoped to transient dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Scoped to Transient - Root", () =>
+            
+            // Scoped -> Transient - root
+            test("Given the scoped to transient dependency resolving the root should fail", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                assert.throws(() =>
+                {
+                    let cr = new Container();
+                    cr.register("a", A, Lifestyle.Scoped);
+                    cr.register("b", B, Lifestyle.Transient);
+                    cr.bootstrap();
+                    cr.resolve("a");
+                }); 
             });
-            test("Scoped to Transient - Child", () =>
+            
+            // Scoped -> Transient - child
+            test("Given the scoped to singleton dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Scoped);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
         });
         
         suite("Transient", () =>
         {
-            test("Transient to Singleton", () =>
+            // Transient -> Singleton
+            test("Given the transient to singleton dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Transient to Singleton - Root", () =>
+            
+            // Transient -> Singleton - root
+            test("Given the transient to singleton dependency resolving the root should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.bootstrap();
+                cr.resolve("a");
+                assert.ok(true);
             });
-            test("Transient to Singleton - Child", () =>
+            
+            // Transient -> Singleton - child
+            test("Given the transient to singleton dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Singleton);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
-            test("Transient to Scoped", () =>
+            
+            // Transient -> Scoped
+            test("Given the transient to scoped dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Scoped);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Transient to Scoped - Root", () =>
+            
+            // Transient -> Scoped - root
+            test("Given the transient to scoped dependency resolving the root should fail", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                assert.throws(() =>
+                {
+                    let cr = new Container();
+                    cr.register("a", A, Lifestyle.Transient);
+                    cr.register("b", B, Lifestyle.Scoped);
+                    cr.bootstrap();
+                    cr.resolve("a");
+                }); 
             });
-            test("Transient to Scoped - Child", () =>
+            
+            // Transient -> Scoped - child
+            test("Given the transient to scoped dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Scoped);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
-            test("Transient to Transient", () =>
+            
+            // Transient -> Transient
+            test("Given the transient to transient dependency registration should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new ComponentRegistry();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.verifyRegistrations();
+                assert.ok(true);
             });
-            test("Transient to Transient - Root", () =>
+            
+            // Transient -> Transient - root
+            test("Given the transient to transient dependency resolving the root should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.bootstrap();
+                cr.resolve("a");
+                assert.ok(true);
             });
-            test("Transient to Transient - Child", () =>
+            
+            // Transient -> Transient - child
+            test("Given the transient to transient dependency resolving the child should pass", () =>
             {
+                class A { public constructor(b: B) { } }
+                class B { }
 
+                let cr = new Container();
+                cr.register("a", A, Lifestyle.Transient);
+                cr.register("b", B, Lifestyle.Transient);
+                cr.bootstrap();
+                let child = cr.createScope();
+                child.resolve("a");
+                assert.ok(true);
             });
         });
     });
