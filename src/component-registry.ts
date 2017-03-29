@@ -56,8 +56,24 @@ export default class ComponentRegistry
         {
             if (!this._registry[dependency])
                 throw new ApplicationException("Unregistered dependency '{0}' detected.".format(dependency));
-
-            this.walkDependencyGraph(this._registry[dependency], visited);
+            
+            let dependencyRegistration = this._registry[dependency] as ComponentRegistration;
+            
+            // rules
+            // singleton --> singleton ==> good (child & root)
+            // singleton --> scoped =====> bad
+            // singleton --> transient ==> good (child & root)
+            // scoped -----> singleton ==> good (child only)
+            // scoped -----> scoped =====> good (child only)
+            // scoped -----> transient ==> good (child only)
+            // transient --> singleton ==> good (child & root)
+            // transient --> scoped =====> good (child only)
+            // transient --> transient ==> good (child & root)
+            
+            if (registration.lifestyle === Lifestyle.Singleton && dependencyRegistration.lifestyle === Lifestyle.Scoped)
+                throw new ApplicationException("Singleton with a scoped dependency detected.");    
+            
+            this.walkDependencyGraph(dependencyRegistration, visited);
         }
 
         visited[registration.key] = null;
