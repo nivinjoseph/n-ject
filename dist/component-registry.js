@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var n_defensive_1 = require("n-defensive");
+var lifestyle_1 = require("./lifestyle");
 var n_exception_1 = require("n-exception");
 var component_registration_1 = require("./component-registration");
 // internal
@@ -45,7 +46,20 @@ var ComponentRegistry = (function () {
             var dependency = _a[_i];
             if (!this._registry[dependency])
                 throw new n_exception_1.ApplicationException("Unregistered dependency '{0}' detected.".format(dependency));
-            this.walkDependencyGraph(this._registry[dependency], visited);
+            var dependencyRegistration = this._registry[dependency];
+            // rules
+            // singleton --> singleton ==> good (child & root)
+            // singleton --> scoped =====> bad
+            // singleton --> transient ==> good (child & root)
+            // scoped -----> singleton ==> good (child only)
+            // scoped -----> scoped =====> good (child only)
+            // scoped -----> transient ==> good (child only)
+            // transient --> singleton ==> good (child & root)
+            // transient --> scoped =====> good (child only)
+            // transient --> transient ==> good (child & root)
+            if (registration.lifestyle === lifestyle_1.default.Singleton && dependencyRegistration.lifestyle === lifestyle_1.default.Scoped)
+                throw new n_exception_1.ApplicationException("Singleton with a scoped dependency detected.");
+            this.walkDependencyGraph(dependencyRegistration, visited);
         }
         visited[registration.key] = null;
     };
