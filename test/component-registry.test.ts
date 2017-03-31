@@ -2,6 +2,8 @@ import * as assert from "assert";
 import ComponentRegistry from "./../src/component-registry";
 import { Container, Lifestyle } from "./../src/index";
 
+// registered dependant but not dependency
+
 suite("ComponentRegistry", () =>
 {
     let cr: ComponentRegistry;
@@ -9,6 +11,21 @@ suite("ComponentRegistry", () =>
     setup(() =>
     {
         cr = new ComponentRegistry();
+    });
+    
+    suite("Registry Validation", () =>
+    {
+        test("Should throw exception when dependant A is registered but dependancy B is not", () =>
+        {
+            class A { public constructor(b: B) { } }
+            class B { }
+            
+            cr.register("a", A, Lifestyle.Transient);
+            assert.throws(() =>
+            {
+                cr.verifyRegistrations();
+            });
+        });
     });
     
     suite("Dependency graph", () =>

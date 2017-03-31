@@ -1,5 +1,6 @@
 import * as assert from "assert";
-import { Container, Lifestyle } from "./../src/index";
+import { Container, Lifestyle, ComponentInstaller, Registry } from "./../src/index";
+
 
 suite("Container", () =>
 {
@@ -8,6 +9,85 @@ suite("Container", () =>
     setup(() =>
     {
         cont = new Container();
+    });
+    
+    suite("Installer check", () =>
+    {
+        class A { }
+
+        class TestInstaller implements ComponentInstaller
+        {
+            public install(registry: Registry): void
+            {
+                registry.register("a", A, Lifestyle.Transient);
+            }
+        } 
+        test("should resolve successfully when using the installer based registration", () =>
+        {
+            let inst = new TestInstaller();
+            cont.install(inst);
+            let a = cont.resolve("a");
+            
+            assert.notStrictEqual(a, null);
+        });
+    });
+    
+    suite("Bootstrap check", () =>
+    {
+        
+        // cannot create child scope before bootstrapping
+// cannot register or install installer after bootstrap
+// cannot resolve unregistered things
+        class A { }
+        
+        test("should throw exception when creating a child scope before bootstrapping", () =>
+        {
+            assert.throws(() =>
+            {
+                cont.createScope(); 
+            });
+        });
+        
+        test("should throw exception when registering after bootstrapping", () => 
+        {      
+            cont.bootstrap();
+            
+            assert.throws(() =>
+            {
+                cont.register("a", A, Lifestyle.Transient); 
+            });
+        });
+        
+        test("should throw exception when installing installer after bootstrapping", () => 
+        {
+            class A { }
+
+            class TestInstaller implements ComponentInstaller
+            {
+                public install(registry: Registry): void
+                {
+                    registry.register("a", A, Lifestyle.Transient);
+                }
+            } 
+            
+            let inst = new TestInstaller();
+            cont.bootstrap();
+
+            assert.throws(() =>
+            {
+                cont.install(inst);
+            });
+        });
+        
+        test("should throw exception when resolving unregistered key", () => 
+        {
+            cont.bootstrap();
+
+            assert.throws(() =>
+            {
+                cont.resolve("a");
+            });
+        });
     });
     
     suite("Resolution Rules", () =>
