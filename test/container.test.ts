@@ -269,127 +269,115 @@ suite("Container", () =>
         });
     });
     
-    suite.skip("Instance Checks", () =>
+    suite("Instance Check", () =>
     {
-        suite("Singleton", () =>
+        class A { }
+        
+        suite("Given Singleton A", () =>
         {
-            test("Given the singleton instance resolving the root, should succeed", () =>
+            setup(() =>
             {
-                class A { }
-
                 cont.register("a", A, Lifestyle.Singleton);
                 cont.bootstrap();
-                cont.resolve("a");
+            });
+            
+            test("should resolve successfully from child scope", () =>
+            {
+                let child = cont.createScope();
+                let a = child.resolve("a");
 
-                assert.ok(true);
+                assert.notStrictEqual(a, null);
+            });
+            
+            test("should resolve successfully from root scope", () =>
+            {
+                let a = cont.resolve("a");
+
+                assert.notStrictEqual(a, null);
             });
 
-            test("Given the singleton instance resolving the child, should succeed", () =>
+            test("should be the same instance when resolved from root scope or any child scope", () =>
             {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Singleton);
-                cont.bootstrap();
                 let child = cont.createScope();
-                child.resolve("a");
-
-                assert.ok(true);
-            });
-
-            test("Given the singleton instance create another scope should create the same instance", () =>
-            {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Singleton);
-                cont.bootstrap();
-                let child = cont.createScope();
-                let child2 = cont.createScope();
 
                 assert.strictEqual(cont.resolve("a"), child.resolve("a"));
             });
         });
         
-        suite("Scoped", () =>
+        suite("Given Scoped A", () =>
         {
-            test("Given the scoped instance resolving the root, should fail", () =>
+            setup(() =>
             {
-                class A { }
+                cont.register("a", A, Lifestyle.Scoped);
+                cont.bootstrap();
+            });   
 
+            test("should resolve successfully from the child scope", () =>
+            {
+                let child = cont.createScope();
+                let a = child.resolve("a");
+
+                assert.notStrictEqual(a, null);
+            });
+            
+            test("should throw exception when resolving the root scope", () =>
+            {
                 assert.throws(() =>
                 {
-                    cont.register("a", A, Lifestyle.Scoped);
-                    cont.bootstrap();
                     cont.resolve("a");
                 });
             });
 
-            test("Given the scoped instance creating a different child, should succeed", () =>
+            test("should always return the same instance from same child", () =>
             {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Scoped);
-                cont.bootstrap();
                 let child = cont.createScope();
-                child.resolve("a");
 
-                assert.ok(true);
+                assert.strictEqual(child.resolve("a"), child.resolve("a"));
+                
             });
-
-            test("Should always return the same instance from same child, different from different child", () =>
+            
+            test("should always return different instances from different child", () =>
             {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Scoped);
-                cont.bootstrap();
-
-                let child = cont.createScope();
-                let childInstance = child.resolve("a");
+                let child1 = cont.createScope();
                 let child2 = cont.createScope();
-                let child2Instance = child2.resolve("a");
-
-                assert.strictEqual(childInstance, cont.resolve("a"));
-                assert.notStrictEqual(childInstance, child2Instance);
-
+                
+                assert.notStrictEqual(child1.resolve("a"), child2.resolve("a"));
             });
         });
         
-        suite("Transient", () =>
+        suite("Given Transient A", () =>
         {
-            test("Given the transient instance resolving the root, should succeed", () =>
+            setup(() =>
             {
-                class A { }
-
                 cont.register("a", A, Lifestyle.Transient);
                 cont.bootstrap();
-                cont.resolve("a");
+            });
+            
+            test("should resolve successfully from the child scope", () =>
+            {
+                let child = cont.createScope();
+                let a = child.resolve("a");
 
-                assert.ok(true);
+                assert.notStrictEqual(a, null);
+            });
+            
+            test("should resolve successfully from the root scope", () =>
+            {
+                let a = cont.resolve("a");
+
+                assert.notStrictEqual(a, null);
+            });
+            
+            test("should be a new instance everytime when resolved multiple times from root scope", () =>
+            {
+                assert.notStrictEqual(cont.resolve("a"), cont.resolve("a"));
             });
 
-            test("Given the transient instance resolving the child, should succeed", () =>
+            test("should be a new instance everytime when resolved multiple times from child scope", () =>
             {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Transient);
-                cont.bootstrap();
                 let child = cont.createScope();
-                child.resolve("a");
-
-                assert.ok(true);
-            });
-
-            test("Should always be a new instance when creating one or many newScope's", () =>
-            {
-                class A { }
-
-                cont.register("a", A, Lifestyle.Transient);
-                cont.bootstrap();
-                let child = cont.createScope();
-                let child2 = cont.createScope();
 
                 assert.notStrictEqual(cont.resolve("a"), child.resolve("a"));
-                assert.notStrictEqual(cont.resolve("a"), child2.resolve("a"));
-                assert.notStrictEqual(child.resolve("a"), child2.resolve("a"));
             });
         });    
     });
