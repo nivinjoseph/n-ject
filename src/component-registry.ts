@@ -7,7 +7,7 @@ import ComponentRegistration from "./component-registration";
 export default class ComponentRegistry
 {
     private readonly _registrations = new Array<ComponentRegistration>();
-    private readonly _registry = {};
+    private readonly _registry: {[index: string]: ComponentRegistration} = {};
 
 
     public register(key: string, component: Function, lifestyle: Lifestyle): void
@@ -39,7 +39,7 @@ export default class ComponentRegistry
         return this._registry[key];
     }
 
-    private walkDependencyGraph(registration: ComponentRegistration, visited: object = {}): void
+    private walkDependencyGraph(registration: ComponentRegistration, visited: {[index: string]: ComponentRegistration} = {}): void
     {
         // check if current is in visited
         // add current to visited

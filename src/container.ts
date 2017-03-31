@@ -12,9 +12,6 @@ import { InvalidOperationException } from "n-exception";
 // public
 export default class Container extends BaseScope implements Registry
 {
-    private _isBootstrapped = false;
-    
-    
     public constructor()
     {
         super(ScopeType.Root, new ComponentRegistry(), null);
@@ -23,7 +20,7 @@ export default class Container extends BaseScope implements Registry
 
     public register(key: string, component: Function, lifestyle: Lifestyle): Container
     {
-        if (this._isBootstrapped)
+        if (this.isBootstrapped)
             throw new InvalidOperationException("register");    
         
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
@@ -36,7 +33,7 @@ export default class Container extends BaseScope implements Registry
     
     public install(componentInstaller: ComponentInstaller): Container
     {
-        if (this._isBootstrapped)
+        if (this.isBootstrapped)
             throw new InvalidOperationException("install");    
         
         given(componentInstaller, "componentInstaller").ensureHasValue();
@@ -46,7 +43,7 @@ export default class Container extends BaseScope implements Registry
 
     public createScope(): Scope
     {
-        if (!this._isBootstrapped)
+        if (!this.isBootstrapped)
             throw new InvalidOperationException("createScope");
         
         return new ChildScope(this.componentRegistry, this);
@@ -54,10 +51,11 @@ export default class Container extends BaseScope implements Registry
 
     public bootstrap(): void
     {
-        if (this._isBootstrapped)
+        if (this.isBootstrapped)
             throw new InvalidOperationException("bootstrap");
-        
+
         this.componentRegistry.verifyRegistrations();
-        this._isBootstrapped = true;
+        
+        super.bootstrap();
     }
 }

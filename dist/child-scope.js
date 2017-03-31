@@ -21,6 +21,7 @@ var ChildScope = (function (_super) {
         n_defensive_1.default(componentRegistry, "componentRegistry").ensureHasValue();
         n_defensive_1.default(parentScope, "parentScope").ensureHasValue();
         _this = _super.call(this, scope_type_1.default.Child, componentRegistry, parentScope) || this;
+        _this.bootstrap();
         return _this;
     }
     return ChildScope;

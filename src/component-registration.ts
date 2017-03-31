@@ -50,12 +50,12 @@ export default class ComponentRegistration
         return dependencies;
     }
 
-    private stringifyFn(fn): string
+    private stringifyFn(fn: Function): string
     {
         return Function.prototype.toString.call(fn);
     }
 
-    private extractArgs(fn): RegExpMatchArray
+    private extractArgs(fn: Function): RegExpMatchArray
     {
         const ARROW_ARG = /^([^(]+?)=>/;
         const FN_ARGS = /^[^(]*\(\s*([^)]*)\)/m;
