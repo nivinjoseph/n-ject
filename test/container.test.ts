@@ -26,6 +26,7 @@ suite("Container", () =>
         {
             let inst = new TestInstaller();
             cont.install(inst);
+            cont.bootstrap();
             let a = cont.resolve("a");
             
             assert.notStrictEqual(a, null);
@@ -34,10 +35,6 @@ suite("Container", () =>
     
     suite("Bootstrap check", () =>
     {
-        
-        // cannot create child scope before bootstrapping
-// cannot register or install installer after bootstrap
-// cannot resolve unregistered things
         class A { }
         
         test("should throw exception when creating a child scope before bootstrapping", () =>
@@ -60,8 +57,6 @@ suite("Container", () =>
         
         test("should throw exception when installing installer after bootstrapping", () => 
         {
-            class A { }
-
             class TestInstaller implements ComponentInstaller
             {
                 public install(registry: Registry): void
@@ -88,6 +83,16 @@ suite("Container", () =>
                 cont.resolve("a");
             });
         });
+        
+        test("should throw except when resolving before bootstrapping", () =>
+        {
+            cont.register("a", A, Lifestyle.Transient);
+            
+            assert.throws(() =>
+            {
+                cont.resolve("a");
+            });
+        })
     });
     
     suite("Resolution Rules", () =>
