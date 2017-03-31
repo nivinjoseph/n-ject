@@ -3,7 +3,7 @@ import Scope from "./scope";
 import ScopeType from "./scope-type";
 import Lifestyle from "./lifestyle";
 import "n-ext";
-import { ApplicationException } from "n-exception";
+import { ApplicationException, InvalidOperationException } from "n-exception";
 import ComponentRegistry from "./component-registry";
 import ComponentRegistration from "./component-registration";
 
@@ -11,13 +11,15 @@ import ComponentRegistration from "./component-registration";
 abstract class BaseScope implements Scope
 {
     private readonly _scopeType: ScopeType;
-    private readonly _componentRegistry;
+    private readonly _componentRegistry: ComponentRegistry;
     private readonly _parentScope: Scope;
-    private readonly _scopedInstanceRegistry = {};
+    private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
+    private _isBootstrapped = false;
 
 
     public get scopeType(): ScopeType { return this._scopeType; }
     protected get componentRegistry(): ComponentRegistry { return this._componentRegistry; }
+    protected get isBootstrapped(): boolean { return this._isBootstrapped; }
 
 
     protected constructor(scopeType: ScopeType, componentRegistry: ComponentRegistry, parentScope: Scope)
@@ -36,6 +38,9 @@ abstract class BaseScope implements Scope
 
     public resolve<T extends object>(key: string): T
     {
+        if (!this.isBootstrapped)
+            throw new InvalidOperationException("resolve");    
+        
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
 
         key = key.trim();
@@ -44,6 +49,11 @@ abstract class BaseScope implements Scope
             throw new ApplicationException("No component with key '{0}' registered.".format(key));
 
         return this.findInstance(registration) as T;
+    }
+    
+    protected bootstrap(): void
+    {
+        this._isBootstrapped = true;
     }
 
     private findInstance(registration: ComponentRegistration): object

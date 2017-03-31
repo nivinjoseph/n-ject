@@ -9,6 +9,7 @@ var n_exception_1 = require("n-exception");
 var BaseScope = (function () {
     function BaseScope(scopeType, componentRegistry, parentScope) {
         this._scopedInstanceRegistry = {};
+        this._isBootstrapped = false;
         n_defensive_1.default(scopeType, "scopeType").ensureHasValue();
         n_defensive_1.default(componentRegistry, "componentRegistry").ensureHasValue();
         n_defensive_1.default(parentScope, "parentScope")
@@ -27,13 +28,23 @@ var BaseScope = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(BaseScope.prototype, "isBootstrapped", {
+        get: function () { return this._isBootstrapped; },
+        enumerable: true,
+        configurable: true
+    });
     BaseScope.prototype.resolve = function (key) {
+        if (!this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("resolve");
         n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
         key = key.trim();
         var registration = this._componentRegistry.find(key);
         if (!registration)
             throw new n_exception_1.ApplicationException("No component with key '{0}' registered.".format(key));
         return this.findInstance(registration);
+    };
+    BaseScope.prototype.bootstrap = function () {
+        this._isBootstrapped = true;
     };
     BaseScope.prototype.findInstance = function (registration) {
         if (registration.lifestyle === lifestyle_1.default.Singleton) {

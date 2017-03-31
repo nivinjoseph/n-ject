@@ -13,5 +13,7 @@ export default class ChildScope extends BaseScope
         given(parentScope, "parentScope").ensureHasValue();
 
         super(ScopeType.Child, componentRegistry, parentScope);
+        
+        this.bootstrap();
     }
 }
