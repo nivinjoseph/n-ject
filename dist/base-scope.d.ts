@@ -1,8 +1,8 @@
-import Scope from "./scope";
-import ScopeType from "./scope-type";
+import { Scope } from "./scope";
+import { ScopeType } from "./scope-type";
 import "n-ext";
-import ComponentRegistry from "./component-registry";
-declare abstract class BaseScope implements Scope {
+import { ComponentRegistry } from "./component-registry";
+export declare abstract class BaseScope implements Scope {
     private readonly _scopeType;
     private readonly _componentRegistry;
     private readonly _parentScope;
@@ -18,4 +18,3 @@ declare abstract class BaseScope implements Scope {
     private findScopedInstance(registration);
     private createInstance(registration);
 }
-export default BaseScope;

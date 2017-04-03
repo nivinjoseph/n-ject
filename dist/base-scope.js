@@ -10,10 +10,10 @@ var BaseScope = (function () {
     function BaseScope(scopeType, componentRegistry, parentScope) {
         this._scopedInstanceRegistry = {};
         this._isBootstrapped = false;
-        n_defensive_1.default(scopeType, "scopeType").ensureHasValue();
-        n_defensive_1.default(componentRegistry, "componentRegistry").ensureHasValue();
-        n_defensive_1.default(parentScope, "parentScope")
-            .ensure(function (t) { return scopeType === scope_type_1.default.Child ? parentScope != null : parentScope == null; }, "cannot be null if scope is a child scope and has to be null if scope is root scope");
+        n_defensive_1.given(scopeType, "scopeType").ensureHasValue();
+        n_defensive_1.given(componentRegistry, "componentRegistry").ensureHasValue();
+        n_defensive_1.given(parentScope, "parentScope")
+            .ensure(function (t) { return scopeType === scope_type_1.ScopeType.Child ? parentScope != null : parentScope == null; }, "cannot be null if scope is a child scope and has to be null if scope is root scope");
         this._scopeType = scopeType;
         this._componentRegistry = componentRegistry;
         this._parentScope = parentScope;
@@ -36,7 +36,7 @@ var BaseScope = (function () {
     BaseScope.prototype.resolve = function (key) {
         if (!this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("resolve");
-        n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
+        n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
         key = key.trim();
         var registration = this._componentRegistry.find(key);
         if (!registration)
@@ -47,14 +47,14 @@ var BaseScope = (function () {
         this._isBootstrapped = true;
     };
     BaseScope.prototype.findInstance = function (registration) {
-        if (registration.lifestyle === lifestyle_1.default.Singleton) {
-            if (this.scopeType === scope_type_1.default.Child)
+        if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton) {
+            if (this.scopeType === scope_type_1.ScopeType.Child)
                 return this._parentScope.resolve(registration.key);
             else
                 return this.findScopedInstance(registration);
         }
-        else if (registration.lifestyle === lifestyle_1.default.Scoped) {
-            if (this.scopeType === scope_type_1.default.Root)
+        else if (registration.lifestyle === lifestyle_1.Lifestyle.Scoped) {
+            if (this.scopeType === scope_type_1.ScopeType.Root)
                 throw new n_exception_1.ApplicationException("Cannot resolve component '{0}' with scoped lifestyle from root scope."
                     .format(registration.key));
             else
@@ -88,5 +88,5 @@ var BaseScope = (function () {
     };
     return BaseScope;
 }());
-exports.default = BaseScope;
+exports.BaseScope = BaseScope;
 //# sourceMappingURL=base-scope.js.map

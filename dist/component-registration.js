@@ -4,9 +4,9 @@ var n_defensive_1 = require("n-defensive");
 // internal
 var ComponentRegistration = (function () {
     function ComponentRegistration(key, component, lifestyle) {
-        n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
-        n_defensive_1.default(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
-        n_defensive_1.default(lifestyle, "lifestyle").ensureHasValue();
+        n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
+        n_defensive_1.given(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
+        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
@@ -59,5 +59,5 @@ var ComponentRegistration = (function () {
     };
     return ComponentRegistration;
 }());
-exports.default = ComponentRegistration;
+exports.ComponentRegistration = ComponentRegistration;
 //# sourceMappingURL=component-registration.js.map

@@ -18,13 +18,13 @@ var ChildScope = (function (_super) {
     __extends(ChildScope, _super);
     function ChildScope(componentRegistry, parentScope) {
         var _this = this;
-        n_defensive_1.default(componentRegistry, "componentRegistry").ensureHasValue();
-        n_defensive_1.default(parentScope, "parentScope").ensureHasValue();
-        _this = _super.call(this, scope_type_1.default.Child, componentRegistry, parentScope) || this;
+        n_defensive_1.given(componentRegistry, "componentRegistry").ensureHasValue();
+        n_defensive_1.given(parentScope, "parentScope").ensureHasValue();
+        _this = _super.call(this, scope_type_1.ScopeType.Child, componentRegistry, parentScope) || this;
         _this.bootstrap();
         return _this;
     }
     return ChildScope;
-}(base_scope_1.default));
-exports.default = ChildScope;
+}(base_scope_1.BaseScope));
+exports.ChildScope = ChildScope;
 //# sourceMappingURL=child-scope.js.map

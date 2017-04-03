@@ -6,6 +6,5 @@ var Lifestyle;
     Lifestyle[Lifestyle["Transient"] = 1] = "Transient";
     Lifestyle[Lifestyle["Scoped"] = 2] = "Scoped";
     Lifestyle[Lifestyle["Singleton"] = 3] = "Singleton";
-})(Lifestyle || (Lifestyle = {}));
-exports.default = Lifestyle;
+})(Lifestyle = exports.Lifestyle || (exports.Lifestyle = {}));
 //# sourceMappingURL=lifestyle.js.map

@@ -11,13 +11,13 @@ var ComponentRegistry = (function () {
         this._registry = {};
     }
     ComponentRegistry.prototype.register = function (key, component, lifestyle) {
-        n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
-        n_defensive_1.default(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
-        n_defensive_1.default(lifestyle, "lifestyle").ensureHasValue();
+        n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
+        n_defensive_1.given(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
+        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
         key = key.trim();
         if (this._registry[key])
             throw new n_exception_1.ApplicationException("Duplicate registration for key '{0}'".format(key));
-        var registration = new component_registration_1.default(key, component, lifestyle);
+        var registration = new component_registration_1.ComponentRegistration(key, component, lifestyle);
         this._registrations.push(registration);
         this._registry[key] = registration;
     };
@@ -28,7 +28,7 @@ var ComponentRegistry = (function () {
         }
     };
     ComponentRegistry.prototype.find = function (key) {
-        n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
+        n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
         key = key.trim();
         return this._registry[key];
     };
@@ -57,7 +57,7 @@ var ComponentRegistry = (function () {
             // transient --> singleton ==> good (child & root)
             // transient --> scoped =====> good (child only)
             // transient --> transient ==> good (child & root)
-            if (registration.lifestyle === lifestyle_1.default.Singleton && dependencyRegistration.lifestyle === lifestyle_1.default.Scoped)
+            if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton && dependencyRegistration.lifestyle === lifestyle_1.Lifestyle.Scoped)
                 throw new n_exception_1.ApplicationException("Singleton with a scoped dependency detected.");
             this.walkDependencyGraph(dependencyRegistration, visited);
         }
@@ -65,5 +65,5 @@ var ComponentRegistry = (function () {
     };
     return ComponentRegistry;
 }());
-exports.default = ComponentRegistry;
+exports.ComponentRegistry = ComponentRegistry;
 //# sourceMappingURL=component-registry.js.map

@@ -1,5 +1,5 @@
-import Lifestyle from "./lifestyle";
-interface Registry {
-    register(key: string, component: Function, lifestyle: Lifestyle): Registry;
+export interface Registry {
+    registerTransient(key: string, component: Function): Registry;
+    registerScoped(key: string, component: Function): Registry;
+    registerSingleton(key: string, component: Function): Registry;
 }
-export default Registry;

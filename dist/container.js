@@ -14,42 +14,52 @@ var n_defensive_1 = require("n-defensive");
 var base_scope_1 = require("./base-scope");
 var component_registry_1 = require("./component-registry");
 var scope_type_1 = require("./scope-type");
+var lifestyle_1 = require("./lifestyle");
 var child_scope_1 = require("./child-scope");
 var n_exception_1 = require("n-exception");
 // public
 var Container = (function (_super) {
     __extends(Container, _super);
     function Container() {
-        return _super.call(this, scope_type_1.default.Root, new component_registry_1.default(), null) || this;
+        return _super.call(this, scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null) || this;
     }
-    Container.prototype.register = function (key, component, lifestyle) {
-        if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("register");
-        n_defensive_1.default(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
-        n_defensive_1.default(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
-        n_defensive_1.default(lifestyle, "lifestyle").ensureHasValue();
-        this.componentRegistry.register(key, component, lifestyle);
-        return this;
+    Container.prototype.registerTransient = function (key, component) {
+        return this.register(key, component, lifestyle_1.Lifestyle.Transient);
+    };
+    Container.prototype.registerScoped = function (key, component) {
+        return this.register(key, component, lifestyle_1.Lifestyle.Scoped);
+    };
+    Container.prototype.registerSingleton = function (key, component) {
+        return this.register(key, component, lifestyle_1.Lifestyle.Singleton);
     };
     Container.prototype.install = function (componentInstaller) {
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("install");
-        n_defensive_1.default(componentInstaller, "componentInstaller").ensureHasValue();
+            throw new n_exception_1.InvalidOperationException("install after bootstrap");
+        n_defensive_1.given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
         return this;
     };
     Container.prototype.createScope = function () {
         if (!this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("createScope");
-        return new child_scope_1.default(this.componentRegistry, this);
+            throw new n_exception_1.InvalidOperationException("createScope after bootstrap");
+        return new child_scope_1.ChildScope(this.componentRegistry, this);
     };
     Container.prototype.bootstrap = function () {
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("bootstrap");
+            throw new n_exception_1.InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         _super.prototype.bootstrap.call(this);
     };
+    Container.prototype.register = function (key, component, lifestyle) {
+        if (this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("register after bootstrap");
+        n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
+        n_defensive_1.given(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
+        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
+        this.componentRegistry.register(key, component, lifestyle);
+        return this;
+    };
     return Container;
-}(base_scope_1.default));
-exports.default = Container;
+}(base_scope_1.BaseScope));
+exports.Container = Container;
 //# sourceMappingURL=container.js.map

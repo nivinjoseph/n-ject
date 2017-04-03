@@ -1,12 +1,14 @@
-import Scope from "./scope";
-import BaseScope from "./base-scope";
-import Lifestyle from "./lifestyle";
-import ComponentInstaller from "./component-installer";
-import Registry from "./registry";
-export default class Container extends BaseScope implements Registry {
+import { Scope } from "./scope";
+import { BaseScope } from "./base-scope";
+import { ComponentInstaller } from "./component-installer";
+import { Registry } from "./registry";
+export declare class Container extends BaseScope implements Registry {
     constructor();
-    register(key: string, component: Function, lifestyle: Lifestyle): Container;
+    registerTransient(key: string, component: Function): Registry;
+    registerScoped(key: string, component: Function): Registry;
+    registerSingleton(key: string, component: Function): Registry;
     install(componentInstaller: ComponentInstaller): Container;
     createScope(): Scope;
     bootstrap(): void;
+    private register(key, component, lifestyle);
 }

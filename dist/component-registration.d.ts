@@ -1,5 +1,5 @@
-import Lifestyle from "./lifestyle.js";
-export default class ComponentRegistration {
+import { Lifestyle } from "./lifestyle.js";
+export declare class ComponentRegistration {
     private readonly _key;
     private readonly _component;
     private readonly _lifestyle;
