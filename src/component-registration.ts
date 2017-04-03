@@ -1,8 +1,8 @@
-import Lifestyle from "./lifestyle.js"; 
-import given from "n-defensive";
+import { Lifestyle } from "./lifestyle.js"; 
+import { given } from "n-defensive";
 
 // internal
-export default class ComponentRegistration
+export class ComponentRegistration
 {
     private readonly _key: string;
     private readonly _component: Function;

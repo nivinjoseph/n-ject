@@ -1,6 +1,7 @@
 import * as assert from "assert";
-import ComponentRegistry from "./../src/component-registry";
-import { Container, Lifestyle } from "./../src/index";
+import { ComponentRegistry } from "./../src/component-registry";
+import { Container } from "./../src/index";
+import { Lifestyle } from "./../src/lifestyle";
 
 // registered dependant but not dependency
 

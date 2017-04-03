@@ -1,10 +1,10 @@
-import given from "n-defensive";
-import Lifestyle from "./lifestyle";
+import { given } from "n-defensive";
+import { Lifestyle } from "./lifestyle";
 import { ApplicationException } from "n-exception";
-import ComponentRegistration from "./component-registration";
+import { ComponentRegistration } from "./component-registration";
 
 // internal
-export default class ComponentRegistry
+export class ComponentRegistry
 {
     private readonly _registrations = new Array<ComponentRegistration>();
     private readonly _registry: {[index: string]: ComponentRegistration} = {};

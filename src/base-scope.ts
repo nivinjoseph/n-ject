@@ -1,14 +1,14 @@
-import given from "n-defensive";
-import Scope from "./scope";
-import ScopeType from "./scope-type";
-import Lifestyle from "./lifestyle";
+import { given } from "n-defensive";
+import { Scope } from "./scope";
+import { ScopeType } from "./scope-type";
+import { Lifestyle } from "./lifestyle";
 import "n-ext";
 import { ApplicationException, InvalidOperationException } from "n-exception";
-import ComponentRegistry from "./component-registry";
-import ComponentRegistration from "./component-registration";
+import { ComponentRegistry } from "./component-registry";
+import { ComponentRegistration } from "./component-registration";
 
 // internal
-abstract class BaseScope implements Scope
+export abstract class BaseScope implements Scope
 {
     private readonly _scopeType: ScopeType;
     private readonly _componentRegistry: ComponentRegistry;
@@ -106,5 +106,3 @@ abstract class BaseScope implements Scope
         return new (<any>registration.component)(...dependencyInstances);
     }
 }
-
-export default BaseScope;

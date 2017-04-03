@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { Container, Lifestyle, ComponentInstaller, Registry } from "./../src/index";
+import { Container, ComponentInstaller, Registry } from "./../src/index";
 
 
 suite("Container", () =>
@@ -19,7 +19,7 @@ suite("Container", () =>
         {
             public install(registry: Registry): void
             {
-                registry.register("a", A, Lifestyle.Transient);
+                registry.registerTransient("a", A);
             }
         } 
         test("should resolve successfully when using the installer based registration", () =>
@@ -51,7 +51,7 @@ suite("Container", () =>
             
             assert.throws(() =>
             {
-                cont.register("a", A, Lifestyle.Transient); 
+                cont.registerTransient("a", A); 
             });
         });
         
@@ -61,7 +61,7 @@ suite("Container", () =>
             {
                 public install(registry: Registry): void
                 {
-                    registry.register("a", A, Lifestyle.Transient);
+                    registry.registerTransient("a", A);
                 }
             } 
             
@@ -86,13 +86,13 @@ suite("Container", () =>
         
         test("should throw except when resolving before bootstrapping", () =>
         {
-            cont.register("a", A, Lifestyle.Transient);
+            cont.registerTransient("a", A);
             
             assert.throws(() =>
             {
                 cont.resolve("a");
             });
-        })
+        });
     });
     
     suite("Resolution Rules", () =>
@@ -104,7 +104,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Singleton);
+                cont.registerSingleton("a", A);
             });
             
             // singleton -> singleton
@@ -112,7 +112,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Singleton);
+                    cont.registerSingleton("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -138,7 +138,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Scoped);
+                    cont.registerScoped("b", B);
                 });
 
                 test("should throw exception when bootstraping", () =>
@@ -155,7 +155,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Transient);
+                    cont.registerTransient("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -181,7 +181,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Scoped);
+                cont.registerScoped("a", A);
             });
             
             // scoped -> singleton
@@ -189,7 +189,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Singleton);
+                    cont.registerSingleton("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -216,7 +216,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Scoped);
+                    cont.registerScoped("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -243,7 +243,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Transient);
+                    cont.registerTransient("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -270,7 +270,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Transient);
+                cont.registerTransient("a", A);
             });
             
             // transient -> singleton
@@ -278,7 +278,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Singleton);
+                    cont.registerSingleton("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -304,7 +304,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Scoped);
+                    cont.registerScoped("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -331,7 +331,7 @@ suite("Container", () =>
             {
                 setup(() =>
                 {
-                    cont.register("b", B, Lifestyle.Transient);
+                    cont.registerTransient("b", B);
                 });
 
                 test("should resolve successfully from child scope", () =>
@@ -362,7 +362,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Singleton);
+                cont.registerSingleton("a", A);
                 cont.bootstrap();
             });
             
@@ -393,7 +393,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Scoped);
+                cont.registerScoped("a", A);
                 cont.bootstrap();
             });   
 
@@ -434,7 +434,7 @@ suite("Container", () =>
         {
             setup(() =>
             {
-                cont.register("a", A, Lifestyle.Transient);
+                cont.registerTransient("a", A);
                 cont.bootstrap();
             });
             

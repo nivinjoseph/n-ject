@@ -1,11 +1,11 @@
-import BaseScope from "./base-scope";
-import given from "n-defensive";
-import ScopeType from "./scope-type";
-import ComponentRegistry from "./component-registry";
-import Scope from "./scope";
+import { BaseScope } from "./base-scope";
+import { given } from "n-defensive";
+import { ScopeType } from "./scope-type";
+import { ComponentRegistry } from "./component-registry";
+import { Scope } from "./scope";
 
 // internal
-export default class ChildScope extends BaseScope
+export class ChildScope extends BaseScope
 {
     public constructor(componentRegistry: ComponentRegistry, parentScope: Scope)
     {
