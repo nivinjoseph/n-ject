@@ -1,4 +1,5 @@
 import { Lifestyle } from "./lifestyle.js";
+import "reflect-metadata";
 export declare class ComponentRegistration {
     private readonly _key;
     private readonly _component;
@@ -9,6 +10,7 @@ export declare class ComponentRegistration {
     readonly lifestyle: Lifestyle;
     readonly dependencies: Array<string>;
     constructor(key: string, component: Function, lifestyle: Lifestyle);
+    private getDependencies();
     private detectDependencies();
     private stringifyFn(fn);
     private extractArgs(fn);

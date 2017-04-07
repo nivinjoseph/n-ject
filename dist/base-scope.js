@@ -47,7 +47,10 @@ var BaseScope = (function () {
         this._isBootstrapped = true;
     };
     BaseScope.prototype.findInstance = function (registration) {
-        if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton) {
+        if (registration.lifestyle === lifestyle_1.Lifestyle.Instance) {
+            return registration.component;
+        }
+        else if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton) {
             if (this.scopeType === scope_type_1.ScopeType.Child)
                 return this._parentScope.resolve(registration.key);
             else

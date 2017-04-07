@@ -7,6 +7,7 @@ export declare class Container extends BaseScope implements Registry {
     registerTransient(key: string, component: Function): Registry;
     registerScoped(key: string, component: Function): Registry;
     registerSingleton(key: string, component: Function): Registry;
+    registerInstance(key: string, instance: any): Registry;
     install(componentInstaller: ComponentInstaller): Container;
     createScope(): Scope;
     bootstrap(): void;

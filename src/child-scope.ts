@@ -3,6 +3,7 @@ import { given } from "n-defensive";
 import { ScopeType } from "./scope-type";
 import { ComponentRegistry } from "./component-registry";
 import { Scope } from "./scope";
+import { InvalidOperationException } from "n-exception";
 
 // internal
 export class ChildScope extends BaseScope
@@ -15,5 +16,13 @@ export class ChildScope extends BaseScope
         super(ScopeType.Child, componentRegistry, parentScope);
         
         this.bootstrap();
+    }
+    
+    public createScope(): Scope
+    {
+        if (!this.isBootstrapped)
+            throw new InvalidOperationException("createScope after bootstrap");
+
+        return new ChildScope(this.componentRegistry, this);
     }
 }

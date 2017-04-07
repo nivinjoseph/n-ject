@@ -6,6 +6,7 @@ import "n-ext";
 import { ApplicationException, InvalidOperationException } from "n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
+import { ChildScope } from "./child-scope";
 
 // internal
 export abstract class BaseScope implements Scope
@@ -51,6 +52,9 @@ export abstract class BaseScope implements Scope
         return this.findInstance(registration) as T;
     }
     
+    public abstract createScope(): Scope;
+    
+    
     protected bootstrap(): void
     {
         this._isBootstrapped = true;
@@ -58,7 +62,11 @@ export abstract class BaseScope implements Scope
 
     private findInstance(registration: ComponentRegistration): object
     {
-        if (registration.lifestyle === Lifestyle.Singleton)
+        if (registration.lifestyle === Lifestyle.Instance)
+        {
+            return registration.component; 
+        }    
+        else if (registration.lifestyle === Lifestyle.Singleton)
         {
             if (this.scopeType === ScopeType.Child)
                 return this._parentScope.resolve(registration.key);

@@ -13,6 +13,7 @@ export declare abstract class BaseScope implements Scope {
     protected readonly isBootstrapped: boolean;
     protected constructor(scopeType: ScopeType, componentRegistry: ComponentRegistry, parentScope: Scope);
     resolve<T extends object>(key: string): T;
+    abstract createScope(): Scope;
     protected bootstrap(): void;
     private findInstance(registration);
     private findScopedInstance(registration);

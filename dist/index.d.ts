@@ -3,4 +3,5 @@ import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
 import { ComponentInstaller } from "./component-installer";
 import { Registry } from "./registry";
-export { Container, Scope, ScopeType, ComponentInstaller, Registry };
+import { inject } from "./inject";
+export { Container, Scope, ScopeType, ComponentInstaller, Registry, inject };

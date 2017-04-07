@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var lifestyle_js_1 = require("./lifestyle.js");
 var n_defensive_1 = require("n-defensive");
+require("reflect-metadata");
+var inject_1 = require("./inject");
 // internal
 var ComponentRegistration = (function () {
     function ComponentRegistration(key, component, lifestyle) {
@@ -10,7 +13,7 @@ var ComponentRegistration = (function () {
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
-        this._dependencies = this.detectDependencies();
+        this._dependencies = this.getDependencies();
     }
     Object.defineProperty(ComponentRegistration.prototype, "key", {
         get: function () { return this._key; },
@@ -32,6 +35,14 @@ var ComponentRegistration = (function () {
         enumerable: true,
         configurable: true
     });
+    ComponentRegistration.prototype.getDependencies = function () {
+        if (this._lifestyle === lifestyle_js_1.Lifestyle.Instance)
+            return new Array();
+        if (Reflect.hasOwnMetadata(inject_1.injectSymbol, this._component))
+            return Reflect.getOwnMetadata(inject_1.injectSymbol, this._component);
+        else
+            return this.detectDependencies();
+    };
     // Borrowed from AngularJS implementation
     ComponentRegistration.prototype.detectDependencies = function () {
         var FN_ARG_SPLIT = /,/;

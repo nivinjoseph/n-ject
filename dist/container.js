@@ -24,13 +24,20 @@ var Container = (function (_super) {
         return _super.call(this, scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null) || this;
     }
     Container.prototype.registerTransient = function (key, component) {
-        return this.register(key, component, lifestyle_1.Lifestyle.Transient);
+        this.register(key, component, lifestyle_1.Lifestyle.Transient);
+        return this;
     };
     Container.prototype.registerScoped = function (key, component) {
-        return this.register(key, component, lifestyle_1.Lifestyle.Scoped);
+        this.register(key, component, lifestyle_1.Lifestyle.Scoped);
+        return this;
     };
     Container.prototype.registerSingleton = function (key, component) {
-        return this.register(key, component, lifestyle_1.Lifestyle.Singleton);
+        this.register(key, component, lifestyle_1.Lifestyle.Singleton);
+        return this;
+    };
+    Container.prototype.registerInstance = function (key, instance) {
+        this.register(key, instance, lifestyle_1.Lifestyle.Instance);
+        return this;
     };
     Container.prototype.install = function (componentInstaller) {
         if (this.isBootstrapped)
@@ -54,10 +61,11 @@ var Container = (function (_super) {
         if (this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue().ensure(function (t) { return !t.isEmptyOrWhiteSpace(); });
-        n_defensive_1.given(component, "component").ensureHasValue().ensure(function (t) { return typeof t === "function"; });
+        n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
+        if (lifestyle !== lifestyle_1.Lifestyle.Instance)
+            n_defensive_1.given(component, "component").ensure(function (t) { return typeof t === "function"; });
         this.componentRegistry.register(key, component, lifestyle);
-        return this;
     };
     return Container;
 }(base_scope_1.BaseScope));

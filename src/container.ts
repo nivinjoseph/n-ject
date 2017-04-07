@@ -19,17 +19,26 @@ export class Container extends BaseScope implements Registry
 
     public registerTransient(key: string, component: Function): Registry
     {
-        return this.register(key, component, Lifestyle.Transient);
+        this.register(key, component, Lifestyle.Transient);
+        return this;
     }
     
     public registerScoped(key: string, component: Function): Registry
     {
-        return this.register(key, component, Lifestyle.Scoped);
+        this.register(key, component, Lifestyle.Scoped);
+        return this;
     }
     
     public registerSingleton(key: string, component: Function): Registry
     {
-        return this.register(key, component, Lifestyle.Singleton);
+        this.register(key, component, Lifestyle.Singleton);
+        return this;
+    }
+    
+    public registerInstance(key: string, instance: any): Registry
+    {
+        this.register(key, instance, Lifestyle.Instance);
+        return this;
     }
     
     public install(componentInstaller: ComponentInstaller): Container
@@ -60,16 +69,17 @@ export class Container extends BaseScope implements Registry
         super.bootstrap();
     }
     
-    private register(key: string, component: Function, lifestyle: Lifestyle): Container
+    private register(key: string, component: Function, lifestyle: Lifestyle): void
     {
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
 
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
-        given(component, "component").ensureHasValue().ensure(t => typeof t === "function");
+        given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
+        if (lifestyle !== Lifestyle.Instance)
+            given(component, "component").ensure(t => typeof t === "function");
 
         this.componentRegistry.register(key, component, lifestyle);
-        return this;
     }
 }

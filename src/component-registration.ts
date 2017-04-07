@@ -1,5 +1,7 @@
 import { Lifestyle } from "./lifestyle.js"; 
 import { given } from "n-defensive";
+import "reflect-metadata";
+import { injectSymbol } from "./inject";
 
 // internal
 export class ComponentRegistration
@@ -25,10 +27,22 @@ export class ComponentRegistration
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
-        this._dependencies = this.detectDependencies();
+        this._dependencies = this.getDependencies();
     }
 
+    
+    private getDependencies(): string[]
+    {
+        if (this._lifestyle === Lifestyle.Instance)
+            return new Array<string>();    
+        
+        if (Reflect.hasOwnMetadata(injectSymbol, this._component))
+            return Reflect.getOwnMetadata(injectSymbol, this._component);
+        else
+            return this.detectDependencies();    
+    }
 
+    
     // Borrowed from AngularJS implementation
     private detectDependencies(): Array<string>
     {
