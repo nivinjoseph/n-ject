@@ -22,35 +22,13 @@ class ComponentRegistration {
     getDependencies() {
         if (this._lifestyle === lifestyle_js_1.Lifestyle.Instance)
             return new Array();
-        if (Reflect.hasOwnMetadata(inject_1.injectSymbol, this._component))
-            return Reflect.getOwnMetadata(inject_1.injectSymbol, this._component);
-        else
-            return this.detectDependencies();
-    }
-    // Borrowed from AngularJS implementation
-    detectDependencies() {
-        const FN_ARG_SPLIT = /,/;
-        const FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
-        let dependencies = new Array();
-        let argDecl = this.extractArgs(this._component);
-        argDecl[1].split(FN_ARG_SPLIT).forEach(arg => {
-            arg.replace(FN_ARG, (all, underscore, name) => {
-                dependencies.push(name);
-                return undefined;
-            });
-        });
-        return dependencies;
-    }
-    stringifyFn(fn) {
-        return Function.prototype.toString.call(fn);
-    }
-    extractArgs(fn) {
-        const ARROW_ARG = /^([^(]+?)=>/;
-        const FN_ARGS = /^[^(]*\(\s*([^)]*)\)/m;
-        const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-        let fnText = this.stringifyFn(fn).replace(STRIP_COMMENTS, "");
-        let args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
-        return args;
+        // if (Reflect.hasOwnMetadata(injectSymbol, this._component))
+        //     return Reflect.getOwnMetadata(injectSymbol, this._component);
+        // else
+        //     return this.detectDependencies();    
+        return Reflect.hasOwnMetadata(inject_1.injectSymbol, this._component)
+            ? Reflect.getOwnMetadata(inject_1.injectSymbol, this._component)
+            : new Array();
     }
 }
 exports.ComponentRegistration = ComponentRegistration;

@@ -2,6 +2,7 @@ import * as assert from "assert";
 import { ComponentRegistry } from "./../src/component-registry";
 import { Container } from "./../src/index";
 import { Lifestyle } from "./../src/lifestyle";
+import { inject } from "./../src/inject";
 
 // registered dependant but not dependency
 
@@ -18,6 +19,7 @@ suite("ComponentRegistry", () =>
     {
         test("Should throw exception when dependant A is registered but dependancy B is not", () =>
         {
+            @inject("b")
             class A { public constructor(b: B) { } }
             class B { }
             
@@ -33,6 +35,7 @@ suite("ComponentRegistry", () =>
     {
         test("Given Tree verification, should succeed", () =>
         {
+            @inject("b", "c")
             class A { public constructor(b: B, c: C) { } }
             class B { }
             class C { }
@@ -47,7 +50,9 @@ suite("ComponentRegistry", () =>
 
         test("Given DAG verification, should succeed", () =>
         {
+            @inject("b", "c")
             class A { public constructor(b: B, c: C) { } }
+            @inject("c")
             class B { public constructor(c: C) { } }
             class C { }
 
@@ -61,8 +66,11 @@ suite("ComponentRegistry", () =>
 
         test("Given DCG verification, should fail", () =>
         {
+            @inject("b")
             class A { public constructor(b: B) { } }
+            @inject("c")
             class B { public constructor(c: C) { } }
+            @inject("a")
             class C { public constructor(a: A) { } }
 
             assert.throws(() =>

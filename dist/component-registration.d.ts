@@ -11,7 +11,4 @@ export declare class ComponentRegistration {
     readonly dependencies: Array<string>;
     constructor(key: string, component: Function, lifestyle: Lifestyle);
     private getDependencies();
-    private detectDependencies();
-    private stringifyFn(fn);
-    private extractArgs(fn);
 }
