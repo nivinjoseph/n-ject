@@ -52,8 +52,6 @@ class Container extends base_scope_1.BaseScope {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
-        if (lifestyle !== lifestyle_1.Lifestyle.Instance)
-            n_defensive_1.given(component, "component").ensure(t => typeof t === "function");
         this.componentRegistry.register(key, component, lifestyle);
     }
 }

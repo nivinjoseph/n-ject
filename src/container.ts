@@ -77,8 +77,6 @@ export class Container extends BaseScope implements Registry
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
-        if (lifestyle !== Lifestyle.Instance)
-            given(component, "component").ensure(t => typeof t === "function");
 
         this.componentRegistry.register(key, component, lifestyle);
     }
