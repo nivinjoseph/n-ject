@@ -12,7 +12,7 @@ class ComponentRegistry {
     }
     register(key, component, lifestyle) {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
-        n_defensive_1.given(component, "component").ensureHasValue().ensure(t => typeof t === "function");
+        n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
         key = key.trim();
         if (this._registry[key])

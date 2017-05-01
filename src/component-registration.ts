@@ -21,7 +21,7 @@ export class ComponentRegistration
     public constructor(key: string, component: Function, lifestyle: Lifestyle)
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
-        given(component, "component").ensureHasValue().ensure(t => typeof t === "function");
+        given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
         
         this._key = key;

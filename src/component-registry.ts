@@ -13,7 +13,7 @@ export class ComponentRegistry
     public register(key: string, component: Function, lifestyle: Lifestyle): void
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
-        given(component, "component").ensureHasValue().ensure(t => typeof t === "function");
+        given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
 
         key = key.trim();
