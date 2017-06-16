@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Container } from "./container";
 import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";

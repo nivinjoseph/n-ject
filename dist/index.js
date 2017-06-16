@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const container_1 = require("./container");
 exports.Container = container_1.Container;
 const scope_type_1 = require("./scope-type");
