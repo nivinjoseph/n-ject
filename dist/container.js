@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const n_defensive_1 = require("n-defensive");
+const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const base_scope_1 = require("./base-scope");
 const component_registry_1 = require("./component-registry");
 const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");
 const child_scope_1 = require("./child-scope");
-const n_exception_1 = require("n-exception");
+const n_exception_1 = require("@nivinjoseph/n-exception");
 // public
 class Container extends base_scope_1.BaseScope {
     constructor() {

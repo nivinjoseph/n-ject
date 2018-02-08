@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const n_defensive_1 = require("n-defensive");
+const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");
-require("n-ext");
-const n_exception_1 = require("n-exception");
+require("@nivinjoseph/n-ext");
+const n_exception_1 = require("@nivinjoseph/n-exception");
 // internal
 class BaseScope {
     constructor(scopeType, componentRegistry, parentScope) {

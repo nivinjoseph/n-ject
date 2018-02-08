@@ -1,4 +1,4 @@
-import { given } from "n-defensive";
+import { given } from "@nivinjoseph/n-defensive";
 import { Scope } from "./scope";
 import { BaseScope } from "./base-scope";
 import { ComponentRegistry } from "./component-registry";
@@ -7,7 +7,7 @@ import { Lifestyle } from "./lifestyle";
 import { ChildScope } from "./child-scope";
 import { ComponentInstaller } from "./component-installer";
 import { Registry } from "./registry";
-import { InvalidOperationException } from "n-exception";
+import { InvalidOperationException } from "@nivinjoseph/n-exception";
 
 // public
 export class Container extends BaseScope implements Registry

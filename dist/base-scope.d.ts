@@ -1,6 +1,6 @@
 import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
-import "n-ext";
+import "@nivinjoseph/n-ext";
 import { ComponentRegistry } from "./component-registry";
 export declare abstract class BaseScope implements Scope {
     private readonly _scopeType;

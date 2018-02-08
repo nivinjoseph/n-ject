@@ -1,5 +1,5 @@
 import { Lifestyle } from "./lifestyle.js"; 
-import { given } from "n-defensive";
+import { given } from "@nivinjoseph/n-defensive";
 import "reflect-metadata";
 import { injectSymbol } from "./inject";
 

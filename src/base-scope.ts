@@ -1,9 +1,9 @@
-import { given } from "n-defensive";
+import { given } from "@nivinjoseph/n-defensive";
 import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
 import { Lifestyle } from "./lifestyle";
-import "n-ext";
-import { ApplicationException, InvalidOperationException } from "n-exception";
+import "@nivinjoseph/n-ext";
+import { ApplicationException, InvalidOperationException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
 import { ChildScope } from "./child-scope";

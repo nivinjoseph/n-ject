@@ -1,6 +1,6 @@
-import { given } from "n-defensive";
+import { given } from "@nivinjoseph/n-defensive";
 import { Lifestyle } from "./lifestyle";
-import { ApplicationException } from "n-exception";
+import { ApplicationException } from "@nivinjoseph/n-exception";
 import { ComponentRegistration } from "./component-registration";
 
 // internal

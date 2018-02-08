@@ -1,9 +1,9 @@
 import { BaseScope } from "./base-scope";
-import { given } from "n-defensive";
+import { given } from "@nivinjoseph/n-defensive";
 import { ScopeType } from "./scope-type";
 import { ComponentRegistry } from "./component-registry";
 import { Scope } from "./scope";
-import { InvalidOperationException } from "n-exception";
+import { InvalidOperationException } from "@nivinjoseph/n-exception";
 
 // internal
 export class ChildScope extends BaseScope

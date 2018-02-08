@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const lifestyle_js_1 = require("./lifestyle.js");
-const n_defensive_1 = require("n-defensive");
+const n_defensive_1 = require("@nivinjoseph/n-defensive");
 require("reflect-metadata");
 const inject_1 = require("./inject");
 // internal
