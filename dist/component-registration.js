@@ -15,7 +15,7 @@ class ComponentRegistration {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
-        this[keySymbol] = key.trim().split("").join(""); // Safari de-optimization
+        this[keySymbol] = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
