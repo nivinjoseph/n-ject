@@ -14,7 +14,7 @@ class ComponentRegistry {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
-        key = key.trim();
+        key = key.trim().split("").join(""); // Safari de-optimization
         if (this._registry[key])
             throw new n_exception_1.ApplicationException("Duplicate registration for key '{0}'".format(key));
         let registration = new component_registration_1.ComponentRegistration(key, component, lifestyle);
