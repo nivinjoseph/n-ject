@@ -1,7 +1,6 @@
 import { Lifestyle } from "./lifestyle.js";
 import "reflect-metadata";
 export declare class ComponentRegistration {
-    private readonly _key;
     private readonly _component;
     private readonly _lifestyle;
     private readonly _dependencies;

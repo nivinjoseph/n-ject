@@ -5,8 +5,9 @@ const n_defensive_1 = require("@nivinjoseph/n-defensive");
 require("reflect-metadata");
 const inject_1 = require("./inject");
 // internal
+const keySymbol = Symbol("key");
 class ComponentRegistration {
-    get key() { return this._key; }
+    get key() { return this[keySymbol]; }
     get component() { return this._component; }
     get lifestyle() { return this._lifestyle; }
     get dependencies() { return this._dependencies; }
@@ -14,7 +15,7 @@ class ComponentRegistration {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
-        this._key = key;
+        this[keySymbol] = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
