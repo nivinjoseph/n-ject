@@ -28,7 +28,13 @@ class ComponentRegistry {
     find(key) {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         key = key.trim();
-        return this._registry[key];
+        let result = this._registry[key];
+        if (!result) {
+            result = this._registrations.find(t => t.key === key);
+            if (!result)
+                console.log("COULD NOT FIND IN COMPONENT REGISTRY", key);
+        }
+        return result;
     }
     walkDependencyGraph(registration, visited = {}) {
         // check if current is in visited
