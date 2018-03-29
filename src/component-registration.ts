@@ -25,7 +25,7 @@ export class ComponentRegistration
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
         
-        (<any>this)[keySymbol] = key.trim().split("").join(""); // Safari de-optimization
+        (<any>this)[keySymbol] = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
