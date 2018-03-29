@@ -4,15 +4,16 @@ import "reflect-metadata";
 import { injectSymbol } from "./inject";
 
 // internal
+const keySymbol = Symbol("key");
 export class ComponentRegistration
 {
-    private readonly _key: string;
+    // private readonly _key: string;
     private readonly _component: Function;
     private readonly _lifestyle: Lifestyle;
     private readonly _dependencies: Array<string>;
 
 
-    public get key(): string { return this._key; }
+    public get key(): string { return (<any>this)[keySymbol]; }
     public get component(): Function { return this._component; }
     public get lifestyle(): Lifestyle { return this._lifestyle; }
     public get dependencies(): Array<string> { return this._dependencies; }
@@ -24,7 +25,7 @@ export class ComponentRegistration
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
         
-        this._key = key;
+        (<any>this)[keySymbol] = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
