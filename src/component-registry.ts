@@ -16,7 +16,7 @@ export class ComponentRegistry
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue();
 
-        key = key.trim();
+        key = key.trim().split("").join(""); // Safari de-optimization
         if (this._registry[key])
             throw new ApplicationException("Duplicate registration for key '{0}'".format(key));
 
