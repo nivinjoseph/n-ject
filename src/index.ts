@@ -9,4 +9,4 @@ import { inject } from "./inject";
 export 
 {
     Container, Scope, ScopeType, ComponentInstaller, Registry, inject
-}
+};

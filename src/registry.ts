@@ -1,5 +1,3 @@
-import { Lifestyle } from "./lifestyle";
-
 // public
 export interface Registry
 {

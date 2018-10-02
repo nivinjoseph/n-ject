@@ -1,5 +1,6 @@
 import * as assert from "assert";
 import { Container, ComponentInstaller, Registry } from "./../src/index";
+import { inject } from "../dist";
 
 
 suite("Container", () =>
@@ -97,8 +98,10 @@ suite("Container", () =>
     
     suite("Resolution Rules", () =>
     {   
-        class A { public constructor(b: B) { } }
         class B { }
+        @inject("b")
+            // @ts-ignore
+        class A { public constructor(b: B) { } }
         
         suite("Singleton", () =>
         {

@@ -6,7 +6,6 @@ import "@nivinjoseph/n-ext";
 import { ApplicationException, InvalidOperationException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
-import { ChildScope } from "./child-scope";
 
 // internal
 export abstract class BaseScope implements Scope
@@ -28,6 +27,7 @@ export abstract class BaseScope implements Scope
         given(scopeType, "scopeType").ensureHasValue();
         given(componentRegistry, "componentRegistry").ensureHasValue();
         given(parentScope, "parentScope")
+            // @ts-ignore
             .ensure(t => scopeType === ScopeType.Child ? parentScope != null : parentScope == null,
             "cannot be null if scope is a child scope and has to be null if scope is root scope");
 

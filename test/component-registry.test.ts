@@ -1,6 +1,5 @@
 import * as assert from "assert";
 import { ComponentRegistry } from "./../src/component-registry";
-import { Container } from "./../src/index";
 import { Lifestyle } from "./../src/lifestyle";
 import { inject } from "./../src/inject";
 
@@ -19,9 +18,10 @@ suite("ComponentRegistry", () =>
     {
         test("Should throw exception when dependant A is registered but dependancy B is not", () =>
         {
-            @inject("b")
-            class A { public constructor(b: B) { } }
             class B { }
+            @inject("b")
+                // @ts-ignore
+            class A { public constructor(b: B) { } }
             
             cr.register("a", A, Lifestyle.Transient);
             assert.throws(() =>
@@ -35,10 +35,11 @@ suite("ComponentRegistry", () =>
     {
         test("Given Tree verification, should succeed", () =>
         {
-            @inject("b", "c")
-            class A { public constructor(b: B, c: C) { } }
             class B { }
             class C { }
+            @inject("b", "c")
+                // @ts-ignore
+            class A { public constructor(b: B, c: C) { } }
 
             cr.register("a", A, Lifestyle.Transient);
             cr.register("b", B, Lifestyle.Transient);
@@ -50,11 +51,13 @@ suite("ComponentRegistry", () =>
 
         test("Given DAG verification, should succeed", () =>
         {
-            @inject("b", "c")
-            class A { public constructor(b: B, c: C) { } }
-            @inject("c")
-            class B { public constructor(c: C) { } }
             class C { }
+            @inject("c")
+            // @ts-ignore
+            class B { public constructor(c: C) { } }
+            @inject("b", "c")
+                // @ts-ignore
+            class A { public constructor(b: B, c: C) { } }
 
             cr.register("a", A, Lifestyle.Transient);
             cr.register("b", B, Lifestyle.Transient);
@@ -66,12 +69,15 @@ suite("ComponentRegistry", () =>
 
         test("Given DCG verification, should fail", () =>
         {
-            @inject("b")
-            class A { public constructor(b: B) { } }
-            @inject("c")
-            class B { public constructor(c: C) { } }
             @inject("a")
-            class C { public constructor(a: A) { } }
+            // @ts-ignore
+            class C { public constructor(a: any) { } }
+            @inject("c")
+            // @ts-ignore
+            class B { public constructor(c: C) { } }
+            @inject("b")
+                // @ts-ignore
+            class A { public constructor(b: B) { } }
 
             assert.throws(() =>
             {
@@ -84,9 +90,15 @@ suite("ComponentRegistry", () =>
 
         test("Given DCG (immediate cycle) verification, should fail", () =>
         {
-            class A { public constructor(b: B, c: C) { } }
+            @inject("a")
+            // @ts-ignore
+            class C { public constructor(a: any) { } }
+            @inject("c")
+            // @ts-ignore
             class B { public constructor(c: C) { } }
-            class C { public constructor(a: A) { } }
+            @inject("b", "c")
+            // @ts-ignore
+            class A { public constructor(b: B, c: C) { } }
 
             assert.throws(() =>
             {
@@ -99,10 +111,18 @@ suite("ComponentRegistry", () =>
 
         test("Given DCG (late cycle) verification, should fail", () =>
         {
-            class A { public constructor(b: B, c: C) { } }
-            class B { public constructor(c: C) { } }
+            @inject("a")
+            // @ts-ignore
+            class D { public constructor(a: any) { } }
+            @inject("d")
+            // @ts-ignore
             class C { public constructor(d: D) { } }
-            class D { public constructor(a: A) { } }
+            @inject("c")
+            // @ts-ignore
+            class B { public constructor(c: C) { } }
+            @inject("b", "c")
+            // @ts-ignore
+            class A { public constructor(b: B, c: C) { } }
 
             assert.throws(() =>
             {
@@ -116,9 +136,13 @@ suite("ComponentRegistry", () =>
 
         test("Given DCG (self cycle) verification, should fail", () =>
         {
-            class A { public constructor(b: B, c: C) { } }
-            class B { public constructor(c: C, b: B) { } }
             class C { }
+            @inject("c", "b")
+            // @ts-ignore
+            class B { public constructor(c: C, b: B) { } }
+            @inject("b", "c")
+            // @ts-ignore
+            class A { public constructor(b: B, c: C) { } }
 
             assert.throws(() =>
             {
@@ -132,8 +156,10 @@ suite("ComponentRegistry", () =>
     
     suite("Dependency Lifestyle", () =>
     {
-        class A { public constructor(b: B) { } }
         class B { }
+        @inject("b")
+        // @ts-ignore
+        class A { public constructor(b: B) { } }
         
         suite("Singleton", () =>
         {
