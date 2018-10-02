@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// public
 var ScopeType;
 (function (ScopeType) {
     ScopeType[ScopeType["Root"] = 1] = "Root";

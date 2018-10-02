@@ -11,5 +11,5 @@ export declare class Container extends BaseScope implements Registry {
     install(componentInstaller: ComponentInstaller): Container;
     createScope(): Scope;
     bootstrap(): void;
-    private register(key, component, lifestyle);
+    private register;
 }

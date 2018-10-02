@@ -7,7 +7,6 @@ const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");
 const child_scope_1 = require("./child-scope");
 const n_exception_1 = require("@nivinjoseph/n-exception");
-// public
 class Container extends base_scope_1.BaseScope {
     constructor() {
         super(scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null);

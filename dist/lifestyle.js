@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// public
 var Lifestyle;
 (function (Lifestyle) {
     Lifestyle[Lifestyle["Transient"] = 1] = "Transient";

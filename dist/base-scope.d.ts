@@ -15,7 +15,7 @@ export declare abstract class BaseScope implements Scope {
     resolve<T extends object>(key: string): T;
     abstract createScope(): Scope;
     protected bootstrap(): void;
-    private findInstance(registration);
-    private findScopedInstance(registration);
-    private createInstance(registration);
+    private findInstance;
+    private findScopedInstance;
+    private createInstance;
 }

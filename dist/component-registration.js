@@ -4,7 +4,6 @@ const lifestyle_js_1 = require("./lifestyle.js");
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 require("reflect-metadata");
 const inject_1 = require("./inject");
-// internal
 class ComponentRegistration {
     get key() { return this._key; }
     get component() { return this._component; }
@@ -22,10 +21,6 @@ class ComponentRegistration {
     getDependencies() {
         if (this._lifestyle === lifestyle_js_1.Lifestyle.Instance)
             return new Array();
-        // if (Reflect.hasOwnMetadata(injectSymbol, this._component))
-        //     return Reflect.getOwnMetadata(injectSymbol, this._component);
-        // else
-        //     return this.detectDependencies();    
         return Reflect.hasOwnMetadata(inject_1.injectSymbol, this._component)
             ? Reflect.getOwnMetadata(inject_1.injectSymbol, this._component)
             : new Array();

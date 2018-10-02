@@ -5,7 +5,6 @@ const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");
 require("@nivinjoseph/n-ext");
 const n_exception_1 = require("@nivinjoseph/n-exception");
-// internal
 class BaseScope {
     constructor(scopeType, componentRegistry, parentScope) {
         this._scopedInstanceRegistry = {};

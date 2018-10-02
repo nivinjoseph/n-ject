@@ -10,5 +10,5 @@ export declare class ComponentRegistration {
     readonly lifestyle: Lifestyle;
     readonly dependencies: Array<string>;
     constructor(key: string, component: Function, lifestyle: Lifestyle);
-    private getDependencies();
+    private getDependencies;
 }

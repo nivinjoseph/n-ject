@@ -6,5 +6,5 @@ export declare class ComponentRegistry {
     register(key: string, component: Function, lifestyle: Lifestyle): void;
     verifyRegistrations(): void;
     find(key: string): ComponentRegistration;
-    private walkDependencyGraph(registration, visited?);
+    private walkDependencyGraph;
 }

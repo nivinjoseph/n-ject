@@ -4,7 +4,6 @@ const base_scope_1 = require("./base-scope");
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const scope_type_1 = require("./scope-type");
 const n_exception_1 = require("@nivinjoseph/n-exception");
-// internal
 class ChildScope extends base_scope_1.BaseScope {
     constructor(componentRegistry, parentScope) {
         n_defensive_1.given(componentRegistry, "componentRegistry").ensureHasValue();
