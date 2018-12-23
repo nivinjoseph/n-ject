@@ -11,20 +11,20 @@ class Container extends base_scope_1.BaseScope {
     constructor() {
         super(scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null);
     }
-    registerTransient(key, component) {
-        this.register(key, component, lifestyle_1.Lifestyle.Transient);
+    registerTransient(key, component, ...aliases) {
+        this.register(key, component, lifestyle_1.Lifestyle.Transient, ...aliases);
         return this;
     }
-    registerScoped(key, component) {
-        this.register(key, component, lifestyle_1.Lifestyle.Scoped);
+    registerScoped(key, component, ...aliases) {
+        this.register(key, component, lifestyle_1.Lifestyle.Scoped, ...aliases);
         return this;
     }
-    registerSingleton(key, component) {
-        this.register(key, component, lifestyle_1.Lifestyle.Singleton);
+    registerSingleton(key, component, ...aliases) {
+        this.register(key, component, lifestyle_1.Lifestyle.Singleton, ...aliases);
         return this;
     }
-    registerInstance(key, instance) {
-        this.register(key, instance, lifestyle_1.Lifestyle.Instance);
+    registerInstance(key, instance, ...aliases) {
+        this.register(key, instance, lifestyle_1.Lifestyle.Instance, ...aliases);
         return this;
     }
     install(componentInstaller) {
@@ -45,13 +45,16 @@ class Container extends base_scope_1.BaseScope {
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
-    register(key, component, lifestyle) {
+    register(key, component, lifestyle, ...aliases) {
         if (this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
-        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
-        this.componentRegistry.register(key, component, lifestyle);
+        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        n_defensive_1.given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
+            .ensure(t => t.length === t.distinct().length, "duplicates detected");
+        this.componentRegistry.register(key, component, lifestyle, ...aliases);
     }
 }
 exports.Container = Container;

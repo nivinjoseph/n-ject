@@ -9,14 +9,19 @@ class ComponentRegistration {
     get component() { return this._component; }
     get lifestyle() { return this._lifestyle; }
     get dependencies() { return this._dependencies; }
-    constructor(key, component, lifestyle) {
+    get aliases() { return this._aliases; }
+    constructor(key, component, lifestyle, ...aliases) {
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         n_defensive_1.given(component, "component").ensureHasValue();
-        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue();
+        n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        n_defensive_1.given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
+            .ensure(t => t.length === t.distinct().length, "duplicates detected");
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
+        this._aliases = [...aliases.map(t => t.trim())];
     }
     getDependencies() {
         if (this._lifestyle === lifestyle_js_1.Lifestyle.Instance)
