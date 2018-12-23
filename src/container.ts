@@ -17,27 +17,27 @@ export class Container extends BaseScope implements Registry
         super(ScopeType.Root, new ComponentRegistry(), null);
     }
 
-    public registerTransient(key: string, component: Function): Registry
+    public registerTransient(key: string, component: Function, ...aliases: string[]): Registry
     {
-        this.register(key, component, Lifestyle.Transient);
+        this.register(key, component, Lifestyle.Transient, ...aliases);
         return this;
     }
     
-    public registerScoped(key: string, component: Function): Registry
+    public registerScoped(key: string, component: Function, ...aliases: string[]): Registry
     {
-        this.register(key, component, Lifestyle.Scoped);
+        this.register(key, component, Lifestyle.Scoped, ...aliases);
         return this;
     }
     
-    public registerSingleton(key: string, component: Function): Registry
+    public registerSingleton(key: string, component: Function, ...aliases: string[]): Registry
     {
-        this.register(key, component, Lifestyle.Singleton);
+        this.register(key, component, Lifestyle.Singleton, ...aliases);
         return this;
     }
     
-    public registerInstance(key: string, instance: any): Registry
+    public registerInstance(key: string, instance: any, ...aliases: string[]): Registry
     {
-        this.register(key, instance, Lifestyle.Instance);
+        this.register(key, instance, Lifestyle.Instance, ...aliases);
         return this;
     }
     
@@ -69,15 +69,18 @@ export class Container extends BaseScope implements Registry
         super.bootstrap();
     }
     
-    private register(key: string, component: Function, lifestyle: Lifestyle): void
+    private register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
     {
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
 
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
-        given(lifestyle, "lifestyle").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
+            .ensure(t => t.length === t.distinct().length, "duplicates detected");
 
-        this.componentRegistry.register(key, component, lifestyle);
+        this.componentRegistry.register(key, component, lifestyle, ...aliases);
     }
 }

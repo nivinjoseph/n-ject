@@ -10,19 +10,30 @@ export class ComponentRegistry
     private readonly _registry: {[index: string]: ComponentRegistration} = {};
 
 
-    public register(key: string, component: Function, lifestyle: Lifestyle): void
+    public register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
-        given(lifestyle, "lifestyle").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
+            .ensure(t => t.length === t.distinct().length, "duplicates detected");
 
         key = key.trim();
         if (this._registry[key])
             throw new ApplicationException("Duplicate registration for key '{0}'".format(key));
+        
+        aliases.forEach(t =>
+        {
+            const alias = t.trim();
+            if (this._registry[alias])
+                throw new ApplicationException("Duplicate registration for alias '{0}'".format(alias));
+        });
 
-        let registration = new ComponentRegistration(key, component, lifestyle);
+        let registration = new ComponentRegistration(key, component, lifestyle, ...aliases);
         this._registrations.push(registration);
-        this._registry[key] = registration;
+        this._registry[registration.key] = registration;
+        registration.aliases.forEach(t => this._registry[t] = registration);
     }
 
     public verifyRegistrations(): void
@@ -39,7 +50,7 @@ export class ComponentRegistry
         let result = this._registry[key];
         if (!result)
         {
-            result = this._registrations.find(t => t.key === key);
+            result = this._registrations.find(t => t.key === key || t.aliases.some(u => u === key));
             if (!result)
                 console.log("COULD NOT FIND IN COMPONENT REGISTRY", key);    
         }  
@@ -55,10 +66,11 @@ export class ComponentRegistry
         // walk the dependencies reusing the visited
         // remove current from visited
 
-        if (visited[registration.key])
+        if (visited[registration.key] || registration.aliases.some(t => !!visited[t]))
             throw new ApplicationException("Circular dependency detected with registration '{0}'.".format(registration.key));
 
         visited[registration.key] = registration;
+        registration.aliases.forEach(t => visited[t] = registration);
 
         for (let dependency of registration.dependencies)
         {
@@ -85,5 +97,6 @@ export class ComponentRegistry
         }
 
         visited[registration.key] = null;
+        registration.aliases.forEach(t => visited[t] = null);
     }
 }

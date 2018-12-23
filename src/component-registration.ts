@@ -10,24 +10,30 @@ export class ComponentRegistration
     private readonly _component: Function;
     private readonly _lifestyle: Lifestyle;
     private readonly _dependencies: Array<string>;
+    private readonly _aliases: ReadonlyArray<string>;
 
 
     public get key(): string { return this._key; }
     public get component(): Function { return this._component; }
     public get lifestyle(): Lifestyle { return this._lifestyle; }
-    public get dependencies(): Array<string> { return this._dependencies; }
+    public get dependencies(): ReadonlyArray<string> { return this._dependencies; }
+    public get aliases(): ReadonlyArray<string> { return this._aliases; }
 
 
-    public constructor(key: string, component: Function, lifestyle: Lifestyle)
+    public constructor(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[])
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
-        given(lifestyle, "lifestyle").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
+            .ensure(t => t.length === t.distinct().length, "duplicates detected");
         
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
         this._dependencies = this.getDependencies();
+        this._aliases = [...aliases.map(t => t.trim())];
     }
 
     

@@ -95,6 +95,7 @@ export abstract class BaseScope implements Scope
         {
             let instance = this.createInstance(registration);
             this._scopedInstanceRegistry[registration.key] = instance;
+            registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
             return instance;
         }
     }
