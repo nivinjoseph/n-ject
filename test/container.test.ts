@@ -148,7 +148,7 @@ suite("Container", () =>
                     cont.registerScoped("b", B);
                 });
 
-                test.only("should throw exception when bootstraping", () =>
+                test("should throw exception when bootstraping", () =>
                 {
                     assert.throws(() =>
                     {
