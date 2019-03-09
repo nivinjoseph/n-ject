@@ -3,11 +3,13 @@ import { ScopeType } from "./scope-type";
 import "@nivinjoseph/n-ext";
 import { ComponentRegistry } from "./component-registry";
 export declare abstract class BaseScope implements Scope {
+    private readonly _id;
     private readonly _scopeType;
     private readonly _componentRegistry;
     private readonly _parentScope;
     private readonly _scopedInstanceRegistry;
     private _isBootstrapped;
+    readonly id: string;
     readonly scopeType: ScopeType;
     protected readonly componentRegistry: ComponentRegistry;
     protected readonly isBootstrapped: boolean;

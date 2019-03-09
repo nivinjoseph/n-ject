@@ -1,0 +1,1 @@
+{"version":3,"file":"service-locator.js","sourceRoot":"","sources":["../src/service-locator.ts"],"names":[],"mappings":"","sourcesContent":["// public\nexport interface ServiceLocator\n{\n    resolve<T extends object>(key: string): T;\n}"]}

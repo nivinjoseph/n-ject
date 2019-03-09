@@ -4,6 +4,7 @@ const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const lifestyle_1 = require("./lifestyle");
 const n_exception_1 = require("@nivinjoseph/n-exception");
 const component_registration_1 = require("./component-registration");
+const reserved_keys_1 = require("./reserved-keys");
 class ComponentRegistry {
     constructor() {
         this._registrations = new Array();
@@ -50,6 +51,8 @@ class ComponentRegistry {
         visited[registration.key] = registration;
         registration.aliases.forEach(t => visited[t] = registration);
         for (let dependency of registration.dependencies) {
+            if (dependency === reserved_keys_1.ReservedKeys.serviceLocator)
+                continue;
             if (!this._registry[dependency])
                 throw new n_exception_1.ApplicationException("Unregistered dependency '{0}' detected.".format(dependency));
             let dependencyRegistration = this._registry[dependency];
