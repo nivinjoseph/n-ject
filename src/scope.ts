@@ -1,9 +1,10 @@
 import { ScopeType } from "./scope-type";
+import { ServiceLocator } from "./service-locator";
 
 // public
-export interface Scope
+export interface Scope extends ServiceLocator
 {
-    scopeType: ScopeType;
-    resolve<T extends object>(key: string): T;
+    readonly id: string;
+    readonly scopeType: ScopeType;
     createScope(): Scope;
 }

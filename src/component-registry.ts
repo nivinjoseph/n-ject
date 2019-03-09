@@ -2,6 +2,7 @@ import { given } from "@nivinjoseph/n-defensive";
 import { Lifestyle } from "./lifestyle";
 import { ApplicationException } from "@nivinjoseph/n-exception";
 import { ComponentRegistration } from "./component-registration";
+import { ReservedKeys } from "./reserved-keys";
 
 // internal
 export class ComponentRegistry
@@ -74,6 +75,9 @@ export class ComponentRegistry
 
         for (let dependency of registration.dependencies)
         {
+            if (dependency === ReservedKeys.serviceLocator)
+                continue;
+            
             if (!this._registry[dependency])
                 throw new ApplicationException("Unregistered dependency '{0}' detected.".format(dependency));
             

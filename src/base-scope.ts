@@ -6,18 +6,23 @@ import "@nivinjoseph/n-ext";
 import { ApplicationException, InvalidOperationException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
+import { Uuid } from "@nivinjoseph/n-util";
+import { ReservedKeys } from "./reserved-keys";
 
 // internal
 export abstract class BaseScope implements Scope
 {
+    private readonly _id: string;
     private readonly _scopeType: ScopeType;
     private readonly _componentRegistry: ComponentRegistry;
     private readonly _parentScope: Scope;
     private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
     private _isBootstrapped = false;
 
-
+    
+    public get id(): string { return this._id; }
     public get scopeType(): ScopeType { return this._scopeType; }
+    
     protected get componentRegistry(): ComponentRegistry { return this._componentRegistry; }
     protected get isBootstrapped(): boolean { return this._isBootstrapped; }
 
@@ -31,6 +36,7 @@ export abstract class BaseScope implements Scope
             .ensure(t => scopeType === ScopeType.Child ? parentScope != null : parentScope == null,
             "cannot be null if scope is a child scope and has to be null if scope is root scope");
 
+        this._id = Uuid.create();
         this._scopeType = scopeType;
         this._componentRegistry = componentRegistry;
         this._parentScope = parentScope;
@@ -45,6 +51,9 @@ export abstract class BaseScope implements Scope
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
 
         key = key.trim();
+        if (key === ReservedKeys.serviceLocator)
+            return this as unknown as T;
+        
         let registration = this._componentRegistry.find(key);
         if (!registration)
             throw new ApplicationException("No component with key '{0}' registered.".format(key));
@@ -102,10 +111,16 @@ export abstract class BaseScope implements Scope
 
     private createInstance(registration: ComponentRegistration): object
     {
-        let dependencyInstances = [];
-        for (let dependency of registration.dependencies)
-        {
-            let dependencyRegistration = this._componentRegistry.find(dependency);
+        const dependencyInstances = [];
+        for (const dependency of registration.dependencies)
+        {        
+            if (dependency === ReservedKeys.serviceLocator)
+            {
+                dependencyInstances.push(this);
+                continue;
+            }
+            
+            const dependencyRegistration = this._componentRegistry.find(dependency);
             if (!dependencyRegistration)
                 throw new ApplicationException("Dependency '{0}' of component '{1}' not registered."
                     .format(dependency, registration.key));

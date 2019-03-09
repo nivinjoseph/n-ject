@@ -8,6 +8,7 @@ import { ChildScope } from "./child-scope";
 import { ComponentInstaller } from "./component-installer";
 import { Registry } from "./registry";
 import { InvalidOperationException } from "@nivinjoseph/n-exception";
+import { ReservedKeys } from "./reserved-keys";
 
 // public
 export class Container extends BaseScope implements Registry
@@ -74,7 +75,8 @@ export class Container extends BaseScope implements Registry
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
 
-        given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
+        given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())
+            .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
         given(aliases, "aliases").ensureHasValue().ensureIsArray()
