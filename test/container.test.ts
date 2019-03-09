@@ -99,9 +99,13 @@ suite("Container", () =>
     suite("Resolution Rules", () =>
     {   
         class B { }
+        
         @inject("b")
+        class A
+        {
             // @ts-ignore
-        class A { public constructor(b: B) { } }
+            public constructor(b: B) { }
+        }
         
         suite("Singleton", () =>
         {
@@ -144,7 +148,7 @@ suite("Container", () =>
                     cont.registerScoped("b", B);
                 });
 
-                test("should throw exception when bootstraping", () =>
+                test.only("should throw exception when bootstraping", () =>
                 {
                     assert.throws(() =>
                     {
