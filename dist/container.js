@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const base_scope_1 = require("./base-scope");
@@ -29,6 +37,8 @@ class Container extends base_scope_1.BaseScope {
         return this;
     }
     install(componentInstaller) {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
         if (this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("install after bootstrap");
         n_defensive_1.given(componentInstaller, "componentInstaller").ensureHasValue();
@@ -36,17 +46,32 @@ class Container extends base_scope_1.BaseScope {
         return this;
     }
     createScope() {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
         if (!this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("createScope after bootstrap");
         return new child_scope_1.ChildScope(this.componentRegistry, this);
     }
     bootstrap() {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
         if (this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
+    dispose() {
+        const _super = name => super[name];
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.isDisposed)
+                return;
+            yield _super("dispose").call(this);
+            yield this.componentRegistry.dispose();
+        });
+    }
     register(key, component, lifestyle, ...aliases) {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
         if (this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())

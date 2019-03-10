@@ -1,6 +1,7 @@
 import { ScopeType } from "./scope-type";
 import { ServiceLocator } from "./service-locator";
-export interface Scope extends ServiceLocator {
+import { Disposable } from "@nivinjoseph/n-util";
+export interface Scope extends ServiceLocator, Disposable {
     readonly id: string;
     readonly scopeType: ScopeType;
     createScope(): Scope;

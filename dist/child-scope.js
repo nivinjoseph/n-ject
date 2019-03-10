@@ -12,6 +12,8 @@ class ChildScope extends base_scope_1.BaseScope {
         this.bootstrap();
     }
     createScope() {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
         if (!this.isBootstrapped)
             throw new n_exception_1.InvalidOperationException("createScope after bootstrap");
         return new ChildScope(this.componentRegistry, this);
