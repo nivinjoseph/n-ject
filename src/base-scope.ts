@@ -3,10 +3,10 @@ import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
 import { Lifestyle } from "./lifestyle";
 import "@nivinjoseph/n-ext";
-import { ApplicationException, InvalidOperationException } from "@nivinjoseph/n-exception";
+import { ApplicationException, InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
-import { Uuid } from "@nivinjoseph/n-util";
+import { Uuid, Disposable } from "@nivinjoseph/n-util";
 import { ReservedKeys } from "./reserved-keys";
 
 // internal
@@ -18,6 +18,7 @@ export abstract class BaseScope implements Scope
     private readonly _parentScope: Scope;
     private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
     private _isBootstrapped = false;
+    private _isDisposed = false;
 
     
     public get id(): string { return this._id; }
@@ -25,6 +26,8 @@ export abstract class BaseScope implements Scope
     
     protected get componentRegistry(): ComponentRegistry { return this._componentRegistry; }
     protected get isBootstrapped(): boolean { return this._isBootstrapped; }
+    protected get isDisposed(): boolean { return this._isDisposed; }
+    
 
 
     protected constructor(scopeType: ScopeType, componentRegistry: ComponentRegistry, parentScope: Scope)
@@ -45,6 +48,9 @@ export abstract class BaseScope implements Scope
 
     public resolve<T extends object>(key: string): T
     {
+        if (this._isDisposed)
+            throw new ObjectDisposedException(this);
+        
         if (!this.isBootstrapped)
             throw new InvalidOperationException("resolve");    
         
@@ -59,6 +65,43 @@ export abstract class BaseScope implements Scope
             throw new ApplicationException("No component with key '{0}' registered.".format(key));
 
         return this.findInstance(registration) as T;
+    }
+    
+    public async dispose(): Promise<void>
+    {
+        if (this._isDisposed)
+            return;
+        
+        this._isDisposed = true;
+        
+        let disposables;
+        
+        try 
+        {
+            disposables = Object.keys(this._scopedInstanceRegistry)
+                .map(t => this._scopedInstanceRegistry[t])
+                .filter(t => !!(<Disposable>t).dispose)
+                .map(t => ({ type: (<Object>t).getTypeName(), promise: (<Disposable>t).dispose() }));
+        }
+        catch (error)
+        {
+            console.error(`Error: Failed to dispose one or more scoped components.`);
+            console.error(error);
+            return;
+        }
+        
+        for (const disposable of disposables)
+        {
+            try 
+            {
+                await disposable.promise;
+            }
+            catch (error)
+            {
+                console.error(`Error: Failed to dispose component of type '${disposable.type}'.`);
+                console.error(error);
+            }
+        }
     }
     
     public abstract createScope(): Scope;
@@ -102,7 +145,7 @@ export abstract class BaseScope implements Scope
             return this._scopedInstanceRegistry[registration.key];
         else
         {
-            let instance = this.createInstance(registration);
+            const instance = this.createInstance(registration);
             this._scopedInstanceRegistry[registration.key] = instance;
             registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
             return instance;

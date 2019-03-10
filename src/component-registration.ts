@@ -2,25 +2,27 @@ import { Lifestyle } from "./lifestyle.js";
 import { given } from "@nivinjoseph/n-defensive";
 import "reflect-metadata";
 import { injectSymbol } from "./inject";
+import { Disposable } from "@nivinjoseph/n-util";
 
 // internal
-export class ComponentRegistration
+export class ComponentRegistration implements Disposable
 {
     private readonly _key: string;
-    private readonly _component: Function;
+    private readonly _component: Function | object;
     private readonly _lifestyle: Lifestyle;
     private readonly _dependencies: Array<string>;
     private readonly _aliases: ReadonlyArray<string>;
+    private _isDisposed = false;
 
 
     public get key(): string { return this._key; }
-    public get component(): Function { return this._component; }
+    public get component(): Function | object { return this._component; }
     public get lifestyle(): Lifestyle { return this._lifestyle; }
     public get dependencies(): ReadonlyArray<string> { return this._dependencies; }
     public get aliases(): ReadonlyArray<string> { return this._aliases; }
 
 
-    public constructor(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[])
+    public constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[])
     {
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
@@ -36,6 +38,28 @@ export class ComponentRegistration
         this._aliases = [...aliases.map(t => t.trim())];
     }
 
+    
+    public async dispose(): Promise<void>
+    {
+        if (this._isDisposed)
+            return;
+        
+        this._isDisposed = true;
+        
+        if (typeof (this._component) !== "function" && (<Disposable>this._component).dispose)
+        {
+            try 
+            {
+                await (<Disposable>this._component).dispose();
+            }
+            catch (error)
+            {
+                console.error(`Error: Failed to dispose component with key '${this._key}' of type '${(<Object>this._component).getTypeName()}'.`);
+                console.error(error);
+            }
+        }
+    }
+    
     
     private getDependencies(): string[]
     {

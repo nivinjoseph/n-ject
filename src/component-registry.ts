@@ -1,18 +1,23 @@
 import { given } from "@nivinjoseph/n-defensive";
 import { Lifestyle } from "./lifestyle";
-import { ApplicationException } from "@nivinjoseph/n-exception";
+import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ComponentRegistration } from "./component-registration";
 import { ReservedKeys } from "./reserved-keys";
+import { Disposable } from "@nivinjoseph/n-util";
 
 // internal
-export class ComponentRegistry
+export class ComponentRegistry implements Disposable
 {
     private readonly _registrations = new Array<ComponentRegistration>();
-    private readonly _registry: {[index: string]: ComponentRegistration} = {};
+    private readonly _registry: { [index: string]: ComponentRegistration } = {};
+    private _isDisposed = false;
 
 
-    public register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
+    public register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[]): void
     {
+        if (this._isDisposed)
+            throw new ObjectDisposedException(this);
+        
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
@@ -39,12 +44,18 @@ export class ComponentRegistry
 
     public verifyRegistrations(): void
     {
+        if (this._isDisposed)
+            throw new ObjectDisposedException(this);
+        
         for (let registration of this._registrations)
             this.walkDependencyGraph(registration);
     }
 
     public find(key: string): ComponentRegistration
     {
+        if (this._isDisposed)
+            throw new ObjectDisposedException(this);
+        
         given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
 
         key = key.trim();
@@ -58,6 +69,17 @@ export class ComponentRegistry
         
         return result;
     }
+    
+    public async dispose(): Promise<void>
+    {
+        if (this._isDisposed)
+            return;
+        
+        this._isDisposed = true;
+        
+        await  Promise.all(this._registrations.map(t => t.dispose));
+    }
+    
 
     private walkDependencyGraph(registration: ComponentRegistration, visited: {[index: string]: ComponentRegistration} = {}): void
     {

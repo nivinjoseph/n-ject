@@ -12,6 +12,11 @@ suite("Container", () =>
         cont = new Container();
     });
     
+    teardown(async () =>
+    {
+        await cont.dispose();
+    });
+    
     suite("Installer check", () =>
     {
         class A { }

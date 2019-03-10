@@ -5,9 +5,10 @@ import { A } from "./a";
 import { B } from "./b";
 import { C } from "./c";
 
+
 suite("ES6 tests", () =>
 {
-    test("test", () =>
+    test("test", async () =>
     {
         let cr = new ComponentRegistry();
         cr.register("A", A, Lifestyle.Transient);
@@ -15,6 +16,8 @@ suite("ES6 tests", () =>
         cr.register("C", C, Lifestyle.Transient);
         
         cr.verifyRegistrations();
+        
+        await cr.dispose();
 
         assert.ok(true);
     }); 

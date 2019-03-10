@@ -7,12 +7,12 @@ import { Lifestyle } from "./lifestyle";
 import { ChildScope } from "./child-scope";
 import { ComponentInstaller } from "./component-installer";
 import { Registry } from "./registry";
-import { InvalidOperationException } from "@nivinjoseph/n-exception";
+import { InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ReservedKeys } from "./reserved-keys";
 
 // public
 export class Container extends BaseScope implements Registry
-{
+{    
     public constructor()
     {
         super(ScopeType.Root, new ComponentRegistry(), null);
@@ -44,6 +44,9 @@ export class Container extends BaseScope implements Registry
     
     public install(componentInstaller: ComponentInstaller): Container
     {
+        if (this.isDisposed)
+            throw new ObjectDisposedException(this);
+        
         if (this.isBootstrapped)
             throw new InvalidOperationException("install after bootstrap");    
         
@@ -54,6 +57,9 @@ export class Container extends BaseScope implements Registry
 
     public createScope(): Scope
     {
+        if (this.isDisposed)
+            throw new ObjectDisposedException(this);
+        
         if (!this.isBootstrapped)
             throw new InvalidOperationException("createScope after bootstrap");
         
@@ -62,6 +68,9 @@ export class Container extends BaseScope implements Registry
 
     public bootstrap(): void
     {
+        if (this.isDisposed)
+            throw new ObjectDisposedException(this);
+        
         if (this.isBootstrapped)
             throw new InvalidOperationException("bootstrap after bootstrap");
 
@@ -70,8 +79,21 @@ export class Container extends BaseScope implements Registry
         super.bootstrap();
     }
     
+    public async dispose(): Promise<void>
+    {
+        if (this.isDisposed)
+            return;
+        
+        await super.dispose();
+        
+        await this.componentRegistry.dispose();
+    }
+    
     private register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
     {
+        if (this.isDisposed)
+            throw new ObjectDisposedException(this);
+        
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
 

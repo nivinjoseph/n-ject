@@ -14,6 +14,11 @@ suite("ComponentRegistry", () =>
         cr = new ComponentRegistry();
     });
     
+    teardown(async () =>
+    {
+        await cr.dispose();
+    });
+    
     suite("Registry Validation", () =>
     {
         test("Should throw exception when dependant A is registered but dependancy B is not", () =>
