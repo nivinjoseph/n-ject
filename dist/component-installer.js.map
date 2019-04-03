@@ -1,1 +1,1 @@
-{"version":3,"file":"component-installer.js","sourceRoot":"","sources":["../src/component-installer.ts"],"names":[],"mappings":"","sourcesContent":["import { Registry } from \"./registry\";\n\n// public\nexport interface ComponentInstaller\n{\n    install(registry: Registry): void;\n}"]}
+{"version":3,"file":"component-installer.js","sourceRoot":"","sources":["../src/component-installer.ts"],"names":[],"mappings":""}

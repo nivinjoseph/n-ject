@@ -61,11 +61,13 @@ class Container extends base_scope_1.BaseScope {
         super.bootstrap();
     }
     dispose() {
-        const _super = name => super[name];
+        const _super = Object.create(null, {
+            dispose: { get: () => super.dispose }
+        });
         return __awaiter(this, void 0, void 0, function* () {
             if (this.isDisposed)
                 return;
-            yield _super("dispose").call(this);
+            yield _super.dispose.call(this);
             yield this.componentRegistry.dispose();
         });
     }
