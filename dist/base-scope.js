@@ -23,7 +23,7 @@ class BaseScope {
         n_defensive_1.given(scopeType, "scopeType").ensureHasValue();
         n_defensive_1.given(componentRegistry, "componentRegistry").ensureHasValue();
         n_defensive_1.given(parentScope, "parentScope")
-            .ensure(t => scopeType === scope_type_1.ScopeType.Child ? parentScope != null : parentScope == null, "cannot be null if scope is a child scope and has to be null if scope is root scope");
+            .ensure(t => scopeType === scope_type_1.ScopeType.Child ? t != null : t == null, "cannot be null if scope is a child scope and has to be null if scope is root scope");
         this._id = n_util_1.Uuid.create();
         this._scopeType = scopeType;
         this._componentRegistry = componentRegistry;
