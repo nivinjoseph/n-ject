@@ -35,8 +35,7 @@ export abstract class BaseScope implements Scope
         given(scopeType, "scopeType").ensureHasValue();
         given(componentRegistry, "componentRegistry").ensureHasValue();
         given(parentScope, "parentScope")
-            // @ts-ignore
-            .ensure(t => scopeType === ScopeType.Child ? parentScope != null : parentScope == null,
+            .ensure(t => scopeType === ScopeType.Child ? t != null : t == null,
             "cannot be null if scope is a child scope and has to be null if scope is root scope");
 
         this._id = Uuid.create();

@@ -17,7 +17,7 @@ export class ChildScope extends BaseScope
         
         this.bootstrap();
     }
-    
+    // cannot put this method in the base class due to circular reference issue
     public createScope(): Scope
     {
         if (this.isDisposed)
