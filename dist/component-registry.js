@@ -65,7 +65,7 @@ class ComponentRegistry {
             if (this._isDisposed)
                 return;
             this._isDisposed = true;
-            yield Promise.all(this._registrations.map(t => t.dispose));
+            yield Promise.all(this._registrations.map(t => t.dispose()));
         });
     }
     walkDependencyGraph(registration, visited = {}) {
