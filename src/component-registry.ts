@@ -77,7 +77,7 @@ export class ComponentRegistry implements Disposable
         
         this._isDisposed = true;
         
-        await  Promise.all(this._registrations.map(t => t.dispose));
+        await Promise.all(this._registrations.map(t => t.dispose()));
     }
     
 
