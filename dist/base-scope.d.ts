@@ -10,11 +10,11 @@ export declare abstract class BaseScope implements Scope {
     private readonly _scopedInstanceRegistry;
     private _isBootstrapped;
     private _isDisposed;
-    readonly id: string;
-    readonly scopeType: ScopeType;
-    protected readonly componentRegistry: ComponentRegistry;
-    protected readonly isBootstrapped: boolean;
-    protected readonly isDisposed: boolean;
+    get id(): string;
+    get scopeType(): ScopeType;
+    protected get componentRegistry(): ComponentRegistry;
+    protected get isBootstrapped(): boolean;
+    protected get isDisposed(): boolean;
     protected constructor(scopeType: ScopeType, componentRegistry: ComponentRegistry, parentScope: Scope);
     resolve<T extends object>(key: string): T;
     dispose(): Promise<void>;
