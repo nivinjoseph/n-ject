@@ -3,7 +3,7 @@ import { Lifestyle } from "./lifestyle";
 import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ComponentRegistration } from "./component-registration";
 import { ReservedKeys } from "./reserved-keys";
-import { Disposable } from "@nivinjoseph/n-util";
+import { Disposable } from "./disposable";
 
 // internal
 export class ComponentRegistry implements Disposable

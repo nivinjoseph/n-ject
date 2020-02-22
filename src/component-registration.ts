@@ -2,7 +2,7 @@ import { Lifestyle } from "./lifestyle.js";
 import { given } from "@nivinjoseph/n-defensive";
 import "reflect-metadata";
 import { injectSymbol } from "./inject";
-import { Disposable } from "@nivinjoseph/n-util";
+import { Disposable } from "./disposable";
 
 // internal
 export class ComponentRegistration implements Disposable

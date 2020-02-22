@@ -1,4 +1,4 @@
-import { Disposable } from "@nivinjoseph/n-util";
+import { Disposable } from "./disposable";
 
 // public
 export interface ServiceLocator extends Disposable

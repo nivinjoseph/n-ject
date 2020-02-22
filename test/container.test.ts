@@ -1,6 +1,5 @@
 import * as assert from "assert";
-import { Container, ComponentInstaller, Registry } from "./../src/index";
-import { inject } from "../dist";
+import { Container, ComponentInstaller, Registry, inject } from "./../src/index";
 
 
 suite("Container", () =>

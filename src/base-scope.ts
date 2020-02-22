@@ -6,13 +6,13 @@ import "@nivinjoseph/n-ext";
 import { ApplicationException, InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
-import { Uuid, Disposable } from "@nivinjoseph/n-util";
 import { ReservedKeys } from "./reserved-keys";
+import { Disposable } from "./disposable";
 
 // internal
 export abstract class BaseScope implements Scope
 {
-    private readonly _id: string;
+    // private readonly _id: string;
     private readonly _scopeType: ScopeType;
     private readonly _componentRegistry: ComponentRegistry;
     private readonly _parentScope: Scope;
@@ -21,7 +21,7 @@ export abstract class BaseScope implements Scope
     private _isDisposed = false;
 
     
-    public get id(): string { return this._id; }
+    // public get id(): string { return this._id; }
     public get scopeType(): ScopeType { return this._scopeType; }
     
     protected get componentRegistry(): ComponentRegistry { return this._componentRegistry; }
@@ -38,7 +38,7 @@ export abstract class BaseScope implements Scope
             .ensure(t => scopeType === ScopeType.Child ? t != null : t == null,
             "cannot be null if scope is a child scope and has to be null if scope is root scope");
 
-        this._id = Uuid.create();
+        // this._id = Uuid.create();
         this._scopeType = scopeType;
         this._componentRegistry = componentRegistry;
         this._parentScope = parentScope;
