@@ -7,6 +7,7 @@ import { Registry } from "./registry";
 import { inject } from "./inject";
 import { ServiceLocator } from "./service-locator";
 
+
 export 
 {
     Container, Scope, ScopeType, ComponentInstaller, Registry, inject, ServiceLocator

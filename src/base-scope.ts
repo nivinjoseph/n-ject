@@ -7,7 +7,7 @@ import { ApplicationException, InvalidOperationException, ObjectDisposedExceptio
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
 import { ReservedKeys } from "./reserved-keys";
-import { Disposable } from "./disposable";
+import { Disposable } from "@nivinjoseph/n-util";
 
 // internal
 export abstract class BaseScope implements Scope
