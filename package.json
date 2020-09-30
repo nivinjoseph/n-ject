@@ -34,19 +34,19 @@
     },
     "homepage": "https://github.com/nivinjoseph/n-ject#readme",
     "devDependencies": {
-        "@types/mocha": "^7.0.2",
+        "@types/mocha": "^8.0.3",
         "@types/node": "^12.12.17",
-        "mocha": "^7.1.2",
-        "ts-node": "^8.9.1",
-        "tslint": "^6.1.2",
-        "typescript": "^3.8.3",
+        "mocha": "^8.1.3",
+        "ts-node": "^9.0.0",
+        "tslint": "^6.1.3",
+        "typescript": "^4.0.3",
         "typescript-tslint-plugin": "^0.5.5"
     },
     "dependencies": {
-        "@nivinjoseph/n-defensive": "^1.0.32",
+        "@nivinjoseph/n-defensive": "^1.0.33",
         "@nivinjoseph/n-exception": "^1.0.19",
-        "@nivinjoseph/n-ext": "^1.1.18",
-        "@nivinjoseph/n-util": "^1.0.38",
+        "@nivinjoseph/n-ext": "^1.1.19",
+        "@nivinjoseph/n-util": "^1.0.55",
         "reflect-metadata": "^0.1.13"
     }
 }
