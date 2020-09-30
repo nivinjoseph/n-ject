@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ComponentRegistry = void 0;
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const lifestyle_1 = require("./lifestyle");
 const n_exception_1 = require("@nivinjoseph/n-exception");

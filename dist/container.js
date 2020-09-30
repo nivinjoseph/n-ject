@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Container = void 0;
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const base_scope_1 = require("./base-scope");
 const component_registry_1 = require("./component-registry");
@@ -40,8 +41,6 @@ class Container extends base_scope_1.BaseScope {
     install(componentInstaller) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("install after bootstrap");
         n_defensive_1.given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
         return this;
@@ -56,8 +55,6 @@ class Container extends base_scope_1.BaseScope {
     bootstrap() {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
@@ -75,8 +72,6 @@ class Container extends base_scope_1.BaseScope {
     register(key, component, lifestyle, ...aliases) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())
             .ensure(t => !reserved_keys_1.ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         n_defensive_1.given(component, "component").ensureHasValue();

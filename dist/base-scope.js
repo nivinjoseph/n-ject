@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BaseScope = void 0;
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");

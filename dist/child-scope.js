@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChildScope = void 0;
 const base_scope_1 = require("./base-scope");
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const scope_type_1 = require("./scope-type");

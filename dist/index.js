@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.inject = exports.ScopeType = exports.Container = void 0;
 require("reflect-metadata");
 const container_1 = require("./container");
-exports.Container = container_1.Container;
+Object.defineProperty(exports, "Container", { enumerable: true, get: function () { return container_1.Container; } });
 const scope_type_1 = require("./scope-type");
-exports.ScopeType = scope_type_1.ScopeType;
+Object.defineProperty(exports, "ScopeType", { enumerable: true, get: function () { return scope_type_1.ScopeType; } });
 const inject_1 = require("./inject");
-exports.inject = inject_1.inject;
+Object.defineProperty(exports, "inject", { enumerable: true, get: function () { return inject_1.inject; } });
 //# sourceMappingURL=index.js.map
