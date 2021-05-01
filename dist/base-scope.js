@@ -16,6 +16,7 @@ const lifestyle_1 = require("./lifestyle");
 require("@nivinjoseph/n-ext");
 const n_exception_1 = require("@nivinjoseph/n-exception");
 const reserved_keys_1 = require("./reserved-keys");
+// internal
 class BaseScope {
     constructor(scopeType, componentRegistry, parentScope) {
         this._scopedInstanceRegistry = {};
@@ -25,10 +26,12 @@ class BaseScope {
         n_defensive_1.given(componentRegistry, "componentRegistry").ensureHasValue();
         n_defensive_1.given(parentScope, "parentScope")
             .ensure(t => scopeType === scope_type_1.ScopeType.Child ? t != null : t == null, "cannot be null if scope is a child scope and has to be null if scope is root scope");
+        // this._id = Uuid.create();
         this._scopeType = scopeType;
         this._componentRegistry = componentRegistry;
         this._parentScope = parentScope;
     }
+    // public get id(): string { return this._id; }
     get scopeType() { return this._scopeType; }
     get componentRegistry() { return this._componentRegistry; }
     get isBootstrapped() { return this._isBootstrapped; }

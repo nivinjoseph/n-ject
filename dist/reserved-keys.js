@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReservedKeys = void 0;
 class ReservedKeys {
+    /**
+     * static
+     */
     constructor() { }
 }
 exports.ReservedKeys = ReservedKeys;

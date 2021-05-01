@@ -18,6 +18,7 @@ const lifestyle_1 = require("./lifestyle");
 const child_scope_1 = require("./child-scope");
 const n_exception_1 = require("@nivinjoseph/n-exception");
 const reserved_keys_1 = require("./reserved-keys");
+// public
 class Container extends base_scope_1.BaseScope {
     constructor() {
         super(scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null);
@@ -41,6 +42,8 @@ class Container extends base_scope_1.BaseScope {
     install(componentInstaller) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
+        // if (this.isBootstrapped)
+        //     throw new InvalidOperationException("install after bootstrap");    
         n_defensive_1.given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
         return this;
@@ -55,6 +58,8 @@ class Container extends base_scope_1.BaseScope {
     bootstrap() {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
+        // if (this.isBootstrapped)
+        //     throw new InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
@@ -72,6 +77,8 @@ class Container extends base_scope_1.BaseScope {
     register(key, component, lifestyle, ...aliases) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
+        // if (this.isBootstrapped)
+        //     throw new InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())
             .ensure(t => !reserved_keys_1.ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         n_defensive_1.given(component, "component").ensureHasValue();
