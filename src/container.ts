@@ -66,7 +66,7 @@ export class Container extends BaseScope implements Registry
         return new ChildScope(this.componentRegistry, this);
     }
 
-    public bootstrap(): void
+    public override bootstrap(): void
     {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
@@ -79,7 +79,7 @@ export class Container extends BaseScope implements Registry
         super.bootstrap();
     }
     
-    public async dispose(): Promise<void>
+    public override async dispose(): Promise<void>
     {
         if (this.isDisposed)
             return;
