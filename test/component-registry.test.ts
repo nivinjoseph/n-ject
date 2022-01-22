@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { ComponentRegistry } from "./../src/component-registry";
 import { Lifestyle } from "./../src/lifestyle";
-import { inject } from "./../src/inject";
+import { inject } from "./../src/index";
 
 // registered dependant but not dependency
 

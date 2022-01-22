@@ -97,7 +97,7 @@ export class Container extends BaseScope implements Registry
         // if (this.isBootstrapped)
         //     throw new InvalidOperationException("register after bootstrap");
 
-        given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())
+        given(key, "key").ensureHasValue()
             .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();

@@ -24,7 +24,7 @@ export class ComponentRegistration implements Disposable
 
     public constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[])
     {
-        given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
+        given(key, "key").ensureHasValue();
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
         given(aliases, "aliases").ensureHasValue().ensureIsArray()

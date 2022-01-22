@@ -2,7 +2,6 @@ import { given } from "@nivinjoseph/n-defensive";
 import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
 import { Lifestyle } from "./lifestyle";
-import "@nivinjoseph/n-ext";
 import { ApplicationException, InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
 import { ComponentRegistry } from "./component-registry";
 import { ComponentRegistration } from "./component-registration";
@@ -16,7 +15,8 @@ export abstract class BaseScope implements Scope
     private readonly _scopeType: ScopeType;
     private readonly _componentRegistry: ComponentRegistry;
     private readonly _parentScope: Scope;
-    private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
+    // private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
+    private readonly _scopedInstanceRegistry = new Map<string, object>();
     private _isBootstrapped = false;
     private _isDisposed = false;
 
@@ -61,7 +61,7 @@ export abstract class BaseScope implements Scope
         
         let registration = this._componentRegistry.find(key);
         if (!registration)
-            throw new ApplicationException("No component with key '{0}' registered.".format(key));
+            throw new ApplicationException(`No component with key '${key}' registered.`);
 
         return this.findInstance(registration) as T;
     }
@@ -77,14 +77,14 @@ export abstract class BaseScope implements Scope
         
         try 
         {
-            disposables = Object.keys(this._scopedInstanceRegistry)
-                .map(t => this._scopedInstanceRegistry[t])
+            disposables = [...this._scopedInstanceRegistry.keys()]
+                .map(t => this._scopedInstanceRegistry.get(t))
                 .filter(t => !!(<Disposable>t).dispose)
                 .map(t => ({ type: (<Object>t).getTypeName(), promise: (<Disposable>t).dispose() }));
         }
         catch (error)
         {
-            console.error(`Error: Failed to dispose one or more scoped components.`);
+            console.error("Error: Failed to dispose one or more scoped components.");
             console.error(error);
             return;
         }
@@ -127,8 +127,7 @@ export abstract class BaseScope implements Scope
         else if (registration.lifestyle === Lifestyle.Scoped)
         {
             if (this.scopeType === ScopeType.Root)
-                throw new ApplicationException("Cannot resolve component '{0}' with scoped lifestyle from root scope."
-                    .format(registration.key));
+                throw new ApplicationException(`Cannot resolve component '${registration.key}' with scoped lifestyle from root scope.`);
             else
                 return this.findScopedInstance(registration);
         }
@@ -140,15 +139,25 @@ export abstract class BaseScope implements Scope
 
     private findScopedInstance(registration: ComponentRegistration): object
     {
-        if (this._scopedInstanceRegistry[registration.key])
-            return this._scopedInstanceRegistry[registration.key];
-        else
+        let instance = this._scopedInstanceRegistry.get(registration.key);
+        if (instance == null)
         {
-            const instance = this.createInstance(registration);
-            this._scopedInstanceRegistry[registration.key] = instance;
-            registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
-            return instance;
+            instance = this.createInstance(registration);
+            this._scopedInstanceRegistry.set(registration.key, instance);
+            registration.aliases.forEach(t => this._scopedInstanceRegistry.set(t, instance));
         }
+        
+        return instance;
+        
+        // if (this._scopedInstanceRegistry[registration.key])
+        //     return this._scopedInstanceRegistry[registration.key];
+        // else
+        // {
+        //     const instance = this.createInstance(registration);
+        //     this._scopedInstanceRegistry[registration.key] = instance;
+        //     registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
+        //     return instance;
+        // }
     }
 
     private createInstance(registration: ComponentRegistration): object
@@ -164,8 +173,7 @@ export abstract class BaseScope implements Scope
             
             const dependencyRegistration = this._componentRegistry.find(dependency);
             if (!dependencyRegistration)
-                throw new ApplicationException("Dependency '{0}' of component '{1}' not registered."
-                    .format(dependency, registration.key));
+                throw new ApplicationException(`Dependency '${dependency}' of component '${registration.key}' not registered.`);
 
             dependencyInstances.push(this.findInstance(dependencyRegistration));
         }
