@@ -18,7 +18,7 @@ const inject_1 = require("./inject");
 class ComponentRegistration {
     constructor(key, component, lifestyle, ...aliases) {
         this._isDisposed = false;
-        n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
+        n_defensive_1.given(key, "key").ensureHasValue();
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
         n_defensive_1.given(aliases, "aliases").ensureHasValue().ensureIsArray()

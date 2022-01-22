@@ -13,13 +13,13 @@ exports.BaseScope = void 0;
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const scope_type_1 = require("./scope-type");
 const lifestyle_1 = require("./lifestyle");
-require("@nivinjoseph/n-ext");
 const n_exception_1 = require("@nivinjoseph/n-exception");
 const reserved_keys_1 = require("./reserved-keys");
 // internal
 class BaseScope {
     constructor(scopeType, componentRegistry, parentScope) {
-        this._scopedInstanceRegistry = {};
+        // private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
+        this._scopedInstanceRegistry = new Map();
         this._isBootstrapped = false;
         this._isDisposed = false;
         n_defensive_1.given(scopeType, "scopeType").ensureHasValue();
@@ -47,7 +47,7 @@ class BaseScope {
             return this;
         let registration = this._componentRegistry.find(key);
         if (!registration)
-            throw new n_exception_1.ApplicationException("No component with key '{0}' registered.".format(key));
+            throw new n_exception_1.ApplicationException(`No component with key '${key}' registered.`);
         return this.findInstance(registration);
     }
     dispose() {
@@ -57,13 +57,13 @@ class BaseScope {
             this._isDisposed = true;
             let disposables;
             try {
-                disposables = Object.keys(this._scopedInstanceRegistry)
-                    .map(t => this._scopedInstanceRegistry[t])
+                disposables = [...this._scopedInstanceRegistry.keys()]
+                    .map(t => this._scopedInstanceRegistry.get(t))
                     .filter(t => !!t.dispose)
                     .map(t => ({ type: t.getTypeName(), promise: t.dispose() }));
             }
             catch (error) {
-                console.error(`Error: Failed to dispose one or more scoped components.`);
+                console.error("Error: Failed to dispose one or more scoped components.");
                 console.error(error);
                 return;
             }
@@ -93,8 +93,7 @@ class BaseScope {
         }
         else if (registration.lifestyle === lifestyle_1.Lifestyle.Scoped) {
             if (this.scopeType === scope_type_1.ScopeType.Root)
-                throw new n_exception_1.ApplicationException("Cannot resolve component '{0}' with scoped lifestyle from root scope."
-                    .format(registration.key));
+                throw new n_exception_1.ApplicationException(`Cannot resolve component '${registration.key}' with scoped lifestyle from root scope.`);
             else
                 return this.findScopedInstance(registration);
         }
@@ -103,14 +102,22 @@ class BaseScope {
         }
     }
     findScopedInstance(registration) {
-        if (this._scopedInstanceRegistry[registration.key])
-            return this._scopedInstanceRegistry[registration.key];
-        else {
-            const instance = this.createInstance(registration);
-            this._scopedInstanceRegistry[registration.key] = instance;
-            registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
-            return instance;
+        let instance = this._scopedInstanceRegistry.get(registration.key);
+        if (instance == null) {
+            instance = this.createInstance(registration);
+            this._scopedInstanceRegistry.set(registration.key, instance);
+            registration.aliases.forEach(t => this._scopedInstanceRegistry.set(t, instance));
         }
+        return instance;
+        // if (this._scopedInstanceRegistry[registration.key])
+        //     return this._scopedInstanceRegistry[registration.key];
+        // else
+        // {
+        //     const instance = this.createInstance(registration);
+        //     this._scopedInstanceRegistry[registration.key] = instance;
+        //     registration.aliases.forEach(t => this._scopedInstanceRegistry[t] = instance);
+        //     return instance;
+        // }
     }
     createInstance(registration) {
         const dependencyInstances = [];
@@ -121,8 +128,7 @@ class BaseScope {
             }
             const dependencyRegistration = this._componentRegistry.find(dependency);
             if (!dependencyRegistration)
-                throw new n_exception_1.ApplicationException("Dependency '{0}' of component '{1}' not registered."
-                    .format(dependency, registration.key));
+                throw new n_exception_1.ApplicationException(`Dependency '${dependency}' of component '${registration.key}' not registered.`);
             dependencyInstances.push(this.findInstance(dependencyRegistration));
         }
         return new registration.component(...dependencyInstances);

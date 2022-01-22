@@ -79,7 +79,7 @@ class Container extends base_scope_1.BaseScope {
             throw new n_exception_1.ObjectDisposedException(this);
         // if (this.isBootstrapped)
         //     throw new InvalidOperationException("register after bootstrap");
-        n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace())
+        n_defensive_1.given(key, "key").ensureHasValue()
             .ensure(t => !reserved_keys_1.ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();

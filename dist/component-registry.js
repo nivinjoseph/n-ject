@@ -19,30 +19,31 @@ const reserved_keys_1 = require("./reserved-keys");
 class ComponentRegistry {
     constructor() {
         this._registrations = new Array();
-        this._registry = {};
+        // private readonly _registry: { [index: string]: ComponentRegistration } = {};
+        this._registry = new Map();
         this._isDisposed = false;
     }
     register(key, component, lifestyle, ...aliases) {
         if (this._isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
+        n_defensive_1.given(key, "key").ensureHasValue();
         n_defensive_1.given(component, "component").ensureHasValue();
         n_defensive_1.given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
         n_defensive_1.given(aliases, "aliases").ensureHasValue().ensureIsArray()
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
             .ensure(t => t.length === t.distinct().length, "duplicates detected");
         key = key.trim();
-        if (this._registry[key])
-            throw new n_exception_1.ApplicationException("Duplicate registration for key '{0}'".format(key));
+        if (this._registry.has(key))
+            throw new n_exception_1.ApplicationException(`Duplicate registration for key '${key}'`);
         aliases.forEach(t => {
             const alias = t.trim();
-            if (this._registry[alias])
-                throw new n_exception_1.ApplicationException("Duplicate registration for alias '{0}'".format(alias));
+            if (this._registry.has(alias))
+                throw new n_exception_1.ApplicationException(`Duplicate registration for alias '${alias}'`);
         });
         let registration = new component_registration_1.ComponentRegistration(key, component, lifestyle, ...aliases);
         this._registrations.push(registration);
-        this._registry[registration.key] = registration;
-        registration.aliases.forEach(t => this._registry[t] = registration);
+        this._registry.set(registration.key, registration);
+        registration.aliases.forEach(t => this._registry.set(t, registration));
     }
     verifyRegistrations() {
         if (this._isDisposed)
@@ -53,15 +54,18 @@ class ComponentRegistry {
     find(key) {
         if (this._isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        n_defensive_1.given(key, "key").ensureHasValue().ensure(t => !t.isEmptyOrWhiteSpace());
+        n_defensive_1.given(key, "key").ensureHasValue();
         key = key.trim();
-        let result = this._registry[key];
-        if (!result) {
-            result = this._registrations.find(t => t.key === key || t.aliases.some(u => u === key));
-            if (!result)
-                console.log("COULD NOT FIND IN COMPONENT REGISTRY", key);
-        }
-        return result;
+        return this._registry.get(key);
+        // FIXME: do we still need the code below
+        // let result = this._registry[key];
+        // if (!result)
+        // {
+        //     result = this._registrations.find(t => t.key === key || t.aliases.some(u => u === key));
+        //     if (!result)
+        //         console.log("COULD NOT FIND IN COMPONENT REGISTRY", key);
+        // }
+        // return result;
     }
     dispose() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -78,15 +82,15 @@ class ComponentRegistry {
         // walk the dependencies reusing the visited
         // remove current from visited
         if (visited[registration.key] || registration.aliases.some(t => !!visited[t]))
-            throw new n_exception_1.ApplicationException("Circular dependency detected with registration '{0}'.".format(registration.key));
+            throw new n_exception_1.ApplicationException(`Circular dependency detected with registration '${registration.key}'.`);
         visited[registration.key] = registration;
         registration.aliases.forEach(t => visited[t] = registration);
-        for (let dependency of registration.dependencies) {
+        for (const dependency of registration.dependencies) {
             if (dependency === reserved_keys_1.ReservedKeys.serviceLocator)
                 continue;
-            if (!this._registry[dependency])
-                throw new n_exception_1.ApplicationException("Unregistered dependency '{0}' detected.".format(dependency));
-            let dependencyRegistration = this._registry[dependency];
+            if (!this._registry.has(dependency))
+                throw new n_exception_1.ApplicationException(`Unregistered dependency '${dependency}' detected.`);
+            const dependencyRegistration = this._registry.get(dependency);
             // rules
             // singleton --> singleton ==> good (child & root)
             // singleton --> scoped =====> bad

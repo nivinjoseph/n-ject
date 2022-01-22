@@ -7,7 +7,7 @@ export declare class ComponentRegistry implements Disposable {
     private _isDisposed;
     register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[]): void;
     verifyRegistrations(): void;
-    find(key: string): ComponentRegistration;
+    find(key: string): ComponentRegistration | null;
     dispose(): Promise<void>;
     private walkDependencyGraph;
 }

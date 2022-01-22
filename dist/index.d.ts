@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import "@nivinjoseph/n-ext";
 import { Container } from "./container";
 import { Scope } from "./scope";
 import { ScopeType } from "./scope-type";
