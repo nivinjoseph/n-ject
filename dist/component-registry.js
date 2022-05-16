@@ -40,10 +40,22 @@ class ComponentRegistry {
             if (this._registry.has(alias))
                 throw new n_exception_1.ApplicationException(`Duplicate registration for alias '${alias}'`);
         });
-        let registration = new component_registration_1.ComponentRegistration(key, component, lifestyle, ...aliases);
+        const registration = new component_registration_1.ComponentRegistration(key, component, lifestyle, ...aliases);
         this._registrations.push(registration);
         this._registry.set(registration.key, registration);
         registration.aliases.forEach(t => this._registry.set(t, registration));
+    }
+    deregister(key) {
+        if (this._isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
+        n_defensive_1.given(key, "key").ensureHasValue();
+        key = key.trim();
+        if (!this._registry.has(key))
+            return;
+        const registration = this._registrations.find(t => t.key === key);
+        this._registrations.remove(registration);
+        this._registry.delete(registration.key);
+        registration.aliases.forEach(t => this._registry.delete(t));
     }
     verifyRegistrations() {
         if (this._isDisposed)

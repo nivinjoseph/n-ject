@@ -12,5 +12,6 @@ export declare class Container extends BaseScope implements Registry {
     createScope(): Scope;
     bootstrap(): void;
     dispose(): Promise<void>;
+    deregister(key: string): void;
     private register;
 }

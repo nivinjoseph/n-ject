@@ -42,8 +42,8 @@ class Container extends base_scope_1.BaseScope {
     install(componentInstaller) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("install after bootstrap");    
+        if (this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("install after bootstrap");
         n_defensive_1.given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
         return this;
@@ -58,8 +58,8 @@ class Container extends base_scope_1.BaseScope {
     bootstrap() {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("bootstrap after bootstrap");
+        if (this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
@@ -74,11 +74,19 @@ class Container extends base_scope_1.BaseScope {
             yield this.componentRegistry.dispose();
         });
     }
+    deregister(key) {
+        if (this.isDisposed)
+            throw new n_exception_1.ObjectDisposedException(this);
+        if (this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("register after bootstrap");
+        n_defensive_1.given(key, "key").ensureHasValue();
+        this.componentRegistry.deregister(key);
+    }
     register(key, component, lifestyle, ...aliases) {
         if (this.isDisposed)
             throw new n_exception_1.ObjectDisposedException(this);
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("register after bootstrap");
+        if (this.isBootstrapped)
+            throw new n_exception_1.InvalidOperationException("register after bootstrap");
         n_defensive_1.given(key, "key").ensureHasValue()
             .ensure(t => !reserved_keys_1.ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         n_defensive_1.given(component, "component").ensureHasValue();
