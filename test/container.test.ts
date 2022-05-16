@@ -50,36 +50,34 @@ suite("Container", () =>
             });
         });
         
-        // This is allowed now
-        // test("should throw exception when registering after bootstrapping", () => 
-        // {      
-        //     cont.bootstrap();
+        test("should throw exception when registering after bootstrapping", () => 
+        {      
+            cont.bootstrap();
             
-        //     assert.throws(() =>
-        //     {
-        //         cont.registerTransient("a", A); 
-        //     });
-        // });
+            assert.throws(() =>
+            {
+                cont.registerTransient("a", A); 
+            });
+        });
         
-        // This is allowed now
-        // test("should throw exception when installing installer after bootstrapping", () => 
-        // {
-        //     class TestInstaller implements ComponentInstaller
-        //     {
-        //         public install(registry: Registry): void
-        //         {
-        //             registry.registerTransient("a", A);
-        //         }
-        //     } 
+        test("should throw exception when installing installer after bootstrapping", () => 
+        {
+            class TestInstaller implements ComponentInstaller
+            {
+                public install(registry: Registry): void
+                {
+                    registry.registerTransient("a", A);
+                }
+            } 
             
-        //     let inst = new TestInstaller();
-        //     cont.bootstrap();
+            let inst = new TestInstaller();
+            cont.bootstrap();
 
-        //     assert.throws(() =>
-        //     {
-        //         cont.install(inst);
-        //     });
-        // });
+            assert.throws(() =>
+            {
+                cont.install(inst);
+            });
+        });
         
         test("should throw exception when resolving unregistered key", () => 
         {

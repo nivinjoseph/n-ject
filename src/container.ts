@@ -47,8 +47,8 @@ export class Container extends BaseScope implements Registry
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("install after bootstrap");    
+        if (this.isBootstrapped)
+            throw new InvalidOperationException("install after bootstrap");    
         
         given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
@@ -71,8 +71,8 @@ export class Container extends BaseScope implements Registry
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("bootstrap after bootstrap");
+        if (this.isBootstrapped)
+            throw new InvalidOperationException("bootstrap after bootstrap");
 
         this.componentRegistry.verifyRegistrations();
         
@@ -89,13 +89,26 @@ export class Container extends BaseScope implements Registry
         await this.componentRegistry.dispose();
     }
     
+    public deregister(key: string): void
+    {
+        if (this.isDisposed)
+            throw new ObjectDisposedException(this);
+
+        if (this.isBootstrapped)
+            throw new InvalidOperationException("register after bootstrap");
+
+        given(key, "key").ensureHasValue();
+        
+        this.componentRegistry.deregister(key);
+    }
+    
     private register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
     {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         
-        // if (this.isBootstrapped)
-        //     throw new InvalidOperationException("register after bootstrap");
+        if (this.isBootstrapped)
+            throw new InvalidOperationException("register after bootstrap");
 
         given(key, "key").ensureHasValue()
             .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");

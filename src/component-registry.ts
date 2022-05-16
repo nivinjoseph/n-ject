@@ -37,10 +37,27 @@ export class ComponentRegistry implements Disposable
                 throw new ApplicationException(`Duplicate registration for alias '${alias}'`);
         });
 
-        let registration = new ComponentRegistration(key, component, lifestyle, ...aliases);
+        const registration = new ComponentRegistration(key, component, lifestyle, ...aliases);
         this._registrations.push(registration);
         this._registry.set(registration.key, registration);
         registration.aliases.forEach(t => this._registry.set(t, registration));
+    }
+    
+    public deregister(key: string): void
+    {
+        if (this._isDisposed)
+            throw new ObjectDisposedException(this);
+
+        given(key, "key").ensureHasValue();
+        
+        key = key.trim();
+        if (!this._registry.has(key))
+            return;
+        
+        const registration = this._registrations.find(t => t.key === key)!;
+        this._registrations.remove(registration);
+        this._registry.delete(registration.key);
+        registration.aliases.forEach(t => this._registry.delete(t));
     }
 
     public verifyRegistrations(): void
