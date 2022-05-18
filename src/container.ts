@@ -18,27 +18,27 @@ export class Container extends BaseScope implements Registry
         super(ScopeType.Root, new ComponentRegistry(), null);
     }
 
-    public registerTransient(key: string, component: Function, ...aliases: string[]): Registry
+    public registerTransient(key: string, component: Function, ...aliases: Array<string>): Registry
     {
-        this.register(key, component, Lifestyle.Transient, ...aliases);
+        this._register(key, component, Lifestyle.Transient, ...aliases);
         return this;
     }
     
-    public registerScoped(key: string, component: Function, ...aliases: string[]): Registry
+    public registerScoped(key: string, component: Function, ...aliases: Array<string>): Registry
     {
-        this.register(key, component, Lifestyle.Scoped, ...aliases);
+        this._register(key, component, Lifestyle.Scoped, ...aliases);
         return this;
     }
     
-    public registerSingleton(key: string, component: Function, ...aliases: string[]): Registry
+    public registerSingleton(key: string, component: Function, ...aliases: Array<string>): Registry
     {
-        this.register(key, component, Lifestyle.Singleton, ...aliases);
+        this._register(key, component, Lifestyle.Singleton, ...aliases);
         return this;
     }
     
-    public registerInstance(key: string, instance: any, ...aliases: string[]): Registry
+    public registerInstance(key: string, instance: object, ...aliases: Array<string>): Registry
     {
-        this.register(key, instance, Lifestyle.Instance, ...aliases);
+        this._register(key, instance, Lifestyle.Instance, ...aliases);
         return this;
     }
     
@@ -102,7 +102,7 @@ export class Container extends BaseScope implements Registry
         this.componentRegistry.deregister(key);
     }
     
-    private register(key: string, component: Function, lifestyle: Lifestyle, ...aliases: string[]): void
+    private _register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void
     {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
@@ -110,7 +110,7 @@ export class Container extends BaseScope implements Registry
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
 
-        given(key, "key").ensureHasValue()
+        given(key, "key").ensureHasValue().ensureIsString()
             .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();

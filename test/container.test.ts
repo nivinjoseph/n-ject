@@ -1,3 +1,4 @@
+import { given } from "@nivinjoseph/n-defensive";
 import * as assert from "assert";
 import { Container, ComponentInstaller, Registry, inject } from "./../src/index";
 
@@ -29,10 +30,10 @@ suite("Container", () =>
         } 
         test("should resolve successfully when using the installer based registration", () =>
         {
-            let inst = new TestInstaller();
+            const inst = new TestInstaller();
             cont.install(inst);
             cont.bootstrap();
-            let a = cont.resolve("a");
+            const a = cont.resolve("a");
             
             assert.notStrictEqual(a, null);
         });
@@ -70,7 +71,7 @@ suite("Container", () =>
                 }
             } 
             
-            let inst = new TestInstaller();
+            const inst = new TestInstaller();
             cont.bootstrap();
 
             assert.throws(() =>
@@ -107,8 +108,10 @@ suite("Container", () =>
         @inject("b")
         class A
         {
-            // @ts-ignore
-            public constructor(b: B) { }
+            public constructor(b: B)
+            {
+                given(b, "b").ensureHasValue().ensureIsType(B);
+            }
         }
         
         suite("Singleton", () =>
@@ -129,8 +132,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -138,7 +141,7 @@ suite("Container", () =>
                 test("should resolve successfully from root scope", () => 
                 {
                     cont.bootstrap();
-                    let a = cont.resolve("a");
+                    const a = cont.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -172,8 +175,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -181,7 +184,7 @@ suite("Container", () =>
                 test("should resolve successfully from root scope", () => 
                 {
                     cont.bootstrap();
-                    let a = cont.resolve("a");
+                    const a = cont.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -206,8 +209,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -233,8 +236,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -260,8 +263,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -295,8 +298,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -304,7 +307,7 @@ suite("Container", () =>
                 test("should resolve successfully from root scope", () => 
                 {
                     cont.bootstrap();
-                    let a = cont.resolve("a");
+                    const a = cont.resolve("a");
                     
                     assert.notStrictEqual(a, null);
                 });
@@ -321,8 +324,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -348,8 +351,8 @@ suite("Container", () =>
                 test("should resolve successfully from child scope", () =>
                 {
                     cont.bootstrap();
-                    let child = cont.createScope();
-                    let a = child.resolve("a");
+                    const child = cont.createScope();
+                    const a = child.resolve("a");
 
                     assert.notStrictEqual(a, null);
                 });
@@ -357,7 +360,7 @@ suite("Container", () =>
                 test("should resolve successfully from root scope", () => 
                 {
                     cont.bootstrap();
-                    let a = cont.resolve("a");
+                    const a = cont.resolve("a");
                     
                     assert.notStrictEqual(a, null);
                 });
@@ -379,22 +382,22 @@ suite("Container", () =>
             
             test("should resolve successfully from child scope", () =>
             {
-                let child = cont.createScope();
-                let a = child.resolve("a");
+                const child = cont.createScope();
+                const a = child.resolve("a");
 
                 assert.notStrictEqual(a, null);
             });
             
             test("should resolve successfully from root scope", () =>
             {
-                let a = cont.resolve("a");
+                const a = cont.resolve("a");
 
                 assert.notStrictEqual(a, null);
             });
 
             test("should be the same instance when resolved from root scope or any child scope", () =>
             {
-                let child = cont.createScope();
+                const child = cont.createScope();
 
                 assert.strictEqual(cont.resolve("a"), child.resolve("a"));
             });
@@ -410,8 +413,8 @@ suite("Container", () =>
 
             test("should resolve successfully from the child scope", () =>
             {
-                let child = cont.createScope();
-                let a = child.resolve("a");
+                const child = cont.createScope();
+                const a = child.resolve("a");
 
                 assert.notStrictEqual(a, null);
             });
@@ -426,7 +429,7 @@ suite("Container", () =>
 
             test("should always return the same instance from same child", () =>
             {
-                let child = cont.createScope();
+                const child = cont.createScope();
 
                 assert.strictEqual(child.resolve("a"), child.resolve("a"));
                 
@@ -434,8 +437,8 @@ suite("Container", () =>
             
             test("should always return different instances from different child", () =>
             {
-                let child1 = cont.createScope();
-                let child2 = cont.createScope();
+                const child1 = cont.createScope();
+                const child2 = cont.createScope();
                 
                 assert.notStrictEqual(child1.resolve("a"), child2.resolve("a"));
             });
@@ -451,15 +454,15 @@ suite("Container", () =>
             
             test("should resolve successfully from the child scope", () =>
             {
-                let child = cont.createScope();
-                let a = child.resolve("a");
+                const child = cont.createScope();
+                const a = child.resolve("a");
 
                 assert.notStrictEqual(a, null);
             });
             
             test("should resolve successfully from the root scope", () =>
             {
-                let a = cont.resolve("a");
+                const a = cont.resolve("a");
 
                 assert.notStrictEqual(a, null);
             });
@@ -471,7 +474,7 @@ suite("Container", () =>
 
             test("should be a new instance everytime when resolved multiple times from child scope", () =>
             {
-                let child = cont.createScope();
+                const child = cont.createScope();
 
                 assert.notStrictEqual(cont.resolve("a"), child.resolve("a"));
             });

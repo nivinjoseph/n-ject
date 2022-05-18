@@ -22,19 +22,21 @@ export class ComponentRegistration implements Disposable
     public get aliases(): ReadonlyArray<string> { return this._aliases; }
 
 
-    public constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[])
+    public constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>)
     {
-        given(key, "key").ensureHasValue();
+        given(key, "key").ensureHasValue().ensureIsString();
         given(component, "component").ensureHasValue();
-        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(Lifestyle);
         given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => t.every(u => u != null), "alias cannot null")
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
-            .ensure(t => t.length === t.distinct().length, "duplicates detected");
+            .ensure(t => t.length === t.map(u => u.trim()).distinct().length, "duplicates detected");
         
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
-        this._dependencies = this.getDependencies();
+        this._dependencies = this._getDependencies();
         this._aliases = [...aliases.map(t => t.trim())];
     }
 
@@ -46,7 +48,8 @@ export class ComponentRegistration implements Disposable
         
         this._isDisposed = true;
         
-        if (typeof (this._component) !== "function" && (<Disposable>this._component).dispose)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (typeof this._component !== "function" && (<Disposable>this._component).dispose)
         {
             try 
             {
@@ -61,7 +64,7 @@ export class ComponentRegistration implements Disposable
     }
     
     
-    private getDependencies(): string[]
+    private _getDependencies(): Array<string>
     {
         if (this._lifestyle === Lifestyle.Instance)
             return new Array<string>();    
@@ -72,7 +75,7 @@ export class ComponentRegistration implements Disposable
         //     return this.detectDependencies();    
         
         return Reflect.hasOwnMetadata(injectSymbol, this._component)
-            ? Reflect.getOwnMetadata(injectSymbol, this._component)
+            ? Reflect.getOwnMetadata(injectSymbol, this._component) as Array<string>
             : new Array<string>();
     }
 

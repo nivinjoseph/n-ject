@@ -3,15 +3,15 @@ import { given } from "@nivinjoseph/n-defensive";
 import { ScopeType } from "./scope-type";
 import { ComponentRegistry } from "./component-registry";
 import { Scope } from "./scope";
-import { InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
+import { ObjectDisposedException } from "@nivinjoseph/n-exception";
 
 // internal
 export class ChildScope extends BaseScope
 {
     public constructor(componentRegistry: ComponentRegistry, parentScope: Scope)
     {
-        given(componentRegistry, "componentRegistry").ensureHasValue();
-        given(parentScope, "parentScope").ensureHasValue();
+        given(componentRegistry, "componentRegistry").ensureHasValue().ensureIsType(ComponentRegistry);
+        given(parentScope, "parentScope").ensureHasValue().ensureIsObject();
 
         super(ScopeType.Child, componentRegistry, parentScope);
         
@@ -23,8 +23,7 @@ export class ChildScope extends BaseScope
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         
-        if (!this.isBootstrapped)
-            throw new InvalidOperationException("createScope after bootstrap");
+        given(this, "this").ensure(t => t.isBootstrapped, "not bootstrapped");
 
         return new ChildScope(this.componentRegistry, this);
     }

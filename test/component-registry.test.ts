@@ -2,6 +2,7 @@ import * as assert from "assert";
 import { ComponentRegistry } from "./../src/component-registry";
 import { Lifestyle } from "./../src/lifestyle";
 import { inject } from "./../src/index";
+import { given } from "@nivinjoseph/n-defensive";
 
 // registered dependant but not dependency
 
@@ -24,9 +25,15 @@ suite("ComponentRegistry", () =>
         test("Should throw exception when dependant A is registered but dependancy B is not", () =>
         {
             class B { }
+            
             @inject("b")
-                // @ts-ignore
-            class A { public constructor(b: B) { } }
+            class A
+            {
+                public constructor(b: B)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                }
+            }
             
             cr.register("a", A, Lifestyle.Transient);
             assert.throws(() =>
@@ -41,10 +48,18 @@ suite("ComponentRegistry", () =>
         test("Given Tree verification, should succeed", () =>
         {
             class B { }
+            
             class C { }
+            
             @inject("b", "c")
-                // @ts-ignore
-            class A { public constructor(b: B, c: C) { } }
+            class A
+            {
+                public constructor(b: B, c: C)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
 
             cr.register("a", A, Lifestyle.Transient);
             cr.register("b", B, Lifestyle.Transient);
@@ -57,12 +72,25 @@ suite("ComponentRegistry", () =>
         test("Given DAG verification, should succeed", () =>
         {
             class C { }
+            
             @inject("c")
-            // @ts-ignore
-            class B { public constructor(c: C) { } }
+            class B
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+            
             @inject("b", "c")
-                // @ts-ignore
-            class A { public constructor(b: B, c: C) { } }
+            class A
+            {
+                public constructor(b: B, c: C)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
 
             cr.register("a", A, Lifestyle.Transient);
             cr.register("b", B, Lifestyle.Transient);
@@ -75,14 +103,31 @@ suite("ComponentRegistry", () =>
         test("Given DCG verification, should fail", () =>
         {
             @inject("a")
-            // @ts-ignore
-            class C { public constructor(a: any) { } }
+            class C
+            {
+                public constructor(a: any)
+                {
+                    given(a, "a").ensureHasValue();
+                }
+            }
+            
             @inject("c")
-            // @ts-ignore
-            class B { public constructor(c: C) { } }
+            class B
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+            
             @inject("b")
-                // @ts-ignore
-            class A { public constructor(b: B) { } }
+            class A
+            {
+                public constructor(b: B)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                }
+            }
 
             assert.throws(() =>
             {
@@ -96,14 +141,32 @@ suite("ComponentRegistry", () =>
         test("Given DCG (immediate cycle) verification, should fail", () =>
         {
             @inject("a")
-            // @ts-ignore
-            class C { public constructor(a: any) { } }
+            class C
+            {
+                public constructor(a: any)
+                {
+                    given(a, "a").ensureHasValue();
+                }
+            }
+            
             @inject("c")
-            // @ts-ignore
-            class B { public constructor(c: C) { } }
+            class B
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+            
             @inject("b", "c")
-            // @ts-ignore
-            class A { public constructor(b: B, c: C) { } }
+            class A
+            {
+                public constructor(b: B, c: C)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
 
             assert.throws(() =>
             {
@@ -117,17 +180,41 @@ suite("ComponentRegistry", () =>
         test("Given DCG (late cycle) verification, should fail", () =>
         {
             @inject("a")
-            // @ts-ignore
-            class D { public constructor(a: any) { } }
+            class D
+            {
+                public constructor(a: any)
+                {
+                    given(a, "a").ensureHasValue();
+                }
+            }
+            
             @inject("d")
-            // @ts-ignore
-            class C { public constructor(d: D) { } }
+            class C
+            {
+                public constructor(d: D)
+                {
+                    given(d, "d").ensureHasValue().ensureIsType(D);
+                }
+            }
+            
             @inject("c")
-            // @ts-ignore
-            class B { public constructor(c: C) { } }
+            class B
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+            
             @inject("b", "c")
-            // @ts-ignore
-            class A { public constructor(b: B, c: C) { } }
+            class A
+            {
+                public constructor(b: B, c: C)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
 
             assert.throws(() =>
             {
@@ -142,12 +229,26 @@ suite("ComponentRegistry", () =>
         test("Given DCG (self cycle) verification, should fail", () =>
         {
             class C { }
+            
             @inject("c", "b")
-            // @ts-ignore
-            class B { public constructor(c: C, b: B) { } }
+            class B
+            {
+                public constructor(c: C, b: B)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                }
+            }
+            
             @inject("b", "c")
-            // @ts-ignore
-            class A { public constructor(b: B, c: C) { } }
+            class A
+            {
+                public constructor(b: B, c: C)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
 
             assert.throws(() =>
             {
@@ -162,9 +263,15 @@ suite("ComponentRegistry", () =>
     suite("Dependency Lifestyle", () =>
     {
         class B { }
+        
         @inject("b")
-        // @ts-ignore
-        class A { public constructor(b: B) { } }
+        class A
+        {
+            public constructor(b: B)
+            {
+                given(b, "b").ensureHasValue().ensureIsType(B);
+            }
+        }
         
         suite("Singleton", () =>
         {

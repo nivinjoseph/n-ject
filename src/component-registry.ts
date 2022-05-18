@@ -14,17 +14,19 @@ export class ComponentRegistry implements Disposable
     private _isDisposed = false;
 
 
-    public register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: string[]): void
+    public register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void
     {
         if (this._isDisposed)
             throw new ObjectDisposedException(this);
         
-        given(key, "key").ensureHasValue();
+        given(key, "key").ensureHasValue().ensureIsString();
         given(component, "component").ensureHasValue();
-        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(Lifestyle);
         given(aliases, "aliases").ensureHasValue().ensureIsArray()
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => t.every(u => u != null), "alias cannot null")
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
-            .ensure(t => t.length === t.distinct().length, "duplicates detected");
+            .ensure(t => t.length === t.map(u => u.trim()).distinct().length, "duplicates detected");
 
         key = key.trim();
         if (this._registry.has(key))
@@ -48,7 +50,7 @@ export class ComponentRegistry implements Disposable
         if (this._isDisposed)
             throw new ObjectDisposedException(this);
 
-        given(key, "key").ensureHasValue();
+        given(key, "key").ensureHasValue().ensureIsString();
         
         key = key.trim();
         if (!this._registry.has(key))
@@ -65,8 +67,8 @@ export class ComponentRegistry implements Disposable
         if (this._isDisposed)
             throw new ObjectDisposedException(this);
         
-        for (let registration of this._registrations)
-            this.walkDependencyGraph(registration);
+        for (const registration of this._registrations)
+            this._walkDependencyGraph(registration);
     }
 
     public find(key: string): ComponentRegistration | null
@@ -74,10 +76,10 @@ export class ComponentRegistry implements Disposable
         if (this._isDisposed)
             throw new ObjectDisposedException(this);
         
-        given(key, "key").ensureHasValue();
+        given(key, "key").ensureHasValue().ensureIsString();
 
         key = key.trim();
-        return this._registry.get(key);
+        return this._registry.get(key) ?? null;
         
         // FIXME: do we still need the code below
         // let result = this._registry[key];
@@ -102,7 +104,7 @@ export class ComponentRegistry implements Disposable
     }
     
 
-    private walkDependencyGraph(registration: ComponentRegistration, visited: {[index: string]: ComponentRegistration} = {}): void
+    private _walkDependencyGraph(registration: ComponentRegistration, visited: Record<string, ComponentRegistration | null | undefined> = {}): void
     {
         // check if current is in visited
         // add current to visited
@@ -124,7 +126,7 @@ export class ComponentRegistry implements Disposable
             if (!this._registry.has(dependency))
                 throw new ApplicationException(`Unregistered dependency '${dependency}' detected.`);
             
-            const dependencyRegistration = this._registry.get(dependency);
+            const dependencyRegistration = this._registry.get(dependency)!;
             
             // rules
             // singleton --> singleton ==> good (child & root)
@@ -140,7 +142,7 @@ export class ComponentRegistry implements Disposable
             if (registration.lifestyle === Lifestyle.Singleton && dependencyRegistration.lifestyle === Lifestyle.Scoped)
                 throw new ApplicationException("Singleton with a scoped dependency detected.");    
             
-            this.walkDependencyGraph(dependencyRegistration, visited);
+            this._walkDependencyGraph(dependencyRegistration, visited);
         }
 
         visited[registration.key] = null;
