@@ -19,6 +19,7 @@ export abstract class BaseScope implements Scope
     private readonly _scopedInstanceRegistry = new Map<string, object>();
     private _isBootstrapped = false;
     private _isDisposed = false;
+    private _disposePromise: Promise<void> | null = null;
 
     
     protected get componentRegistry(): ComponentRegistry { return this._componentRegistry; }
@@ -65,42 +66,32 @@ export abstract class BaseScope implements Scope
         return this._findInstance(registration) as T;
     }
     
-    public async dispose(): Promise<void>
+    public dispose(): Promise<void>
     {
-        if (this._isDisposed)
-            return;
-        
-        this._isDisposed = true;
-        
-        let disposables;
-        
-        try 
+        if (!this._isDisposed)
         {
-            disposables = [...this._scopedInstanceRegistry.keys()]
+            this._isDisposed = true;
+
+            this._disposePromise = [...this._scopedInstanceRegistry.keys()]
                 .map(t => this._scopedInstanceRegistry.get(t))
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                .filter(t => !!(<Disposable>t).dispose)
-                .map(t => ({ type: (<Object>t).getTypeName(), promise: (<Disposable>t).dispose() }));
-        }
-        catch (error)
-        {
-            console.error("Error: Failed to dispose one or more scoped components.");
-            console.error(error);
-            return;
+                .filter(t => !!(<Disposable>t).dispose && typeof (<Disposable>t).dispose === "function")
+                .map(t => ({ type: (<Object>t).getTypeName(), promise: (<Disposable>t).dispose() }))
+                .forEachAsync(async (disposable) =>
+                {
+                    try 
+                    {
+                        await disposable.promise;
+                    }
+                    catch (error)
+                    {
+                        console.error(`Error: Failed to dispose component of type '${disposable.type}'.`);
+                        console.error(error);
+                    }
+                });
         }
         
-        for (const disposable of disposables)
-        {
-            try 
-            {
-                await disposable.promise;
-            }
-            catch (error)
-            {
-                console.error(`Error: Failed to dispose component of type '${disposable.type}'.`);
-                console.error(error);
-            }
-        }
+        return this._disposePromise!;
     }
     
     public abstract createScope(): Scope;

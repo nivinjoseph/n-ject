@@ -13,6 +13,7 @@ export class ComponentRegistration implements Disposable
     private readonly _dependencies: Array<string>;
     private readonly _aliases: ReadonlyArray<string>;
     private _isDisposed = false;
+    private _disposePromise: Promise<void> | null = null;
 
 
     public get key(): string { return this._key; }
@@ -44,23 +45,31 @@ export class ComponentRegistration implements Disposable
     public async dispose(): Promise<void>
     {
         if (this._isDisposed)
-            return;
+        {
+            this._isDisposed = true;
+
+            this._disposePromise = this._disposeComponent();
+        }
         
-        this._isDisposed = true;
-        
+        return this._disposePromise!;
+    }
+    
+    private async _disposeComponent(): Promise<void>
+    {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (typeof this._component !== "function" && (<Disposable>this._component).dispose)
+        if (typeof this._component !== "function" && (<Disposable>this._component).dispose
+            && typeof (<Disposable>this._component).dispose === "function")
         {
             try 
             {
-                await (<Disposable>this._component).dispose();
+                await(<Disposable>this._component).dispose();
             }
             catch (error)
             {
                 console.error(`Error: Failed to dispose component with key '${this._key}' of type '${(<Object>this._component).getTypeName()}'.`);
                 console.error(error);
             }
-        }
+        }   
     }
     
     

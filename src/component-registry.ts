@@ -12,6 +12,7 @@ export class ComponentRegistry implements Disposable
     // private readonly _registry: { [index: string]: ComponentRegistration } = {};
     private readonly _registry = new Map<string, ComponentRegistration>();
     private _isDisposed = false;
+    private _disposePromise: Promise<void> | null = null;
 
 
     public register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void
@@ -93,14 +94,15 @@ export class ComponentRegistry implements Disposable
         // return result;
     }
     
-    public async dispose(): Promise<void>
+    public dispose(): Promise<void>
     {
-        if (this._isDisposed)
-            return;
+        if (!this._isDisposed)
+        {
+            this._isDisposed = true;
+            this._disposePromise = Promise.all(this._registrations.map(t => t.dispose())) as unknown as Promise<void>;
+        }
         
-        this._isDisposed = true;
-        
-        await Promise.all(this._registrations.map(t => t.dispose()));
+        return this._disposePromise!;
     }
     
 

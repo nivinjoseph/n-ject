@@ -13,6 +13,8 @@ import { ReservedKeys } from "./reserved-keys";
 // public
 export class Container extends BaseScope implements Registry
 {    
+    private _myDisposePromise: Promise<void> | null = null;
+    
     public constructor()
     {
         super(ScopeType.Root, new ComponentRegistry(), null);
@@ -79,14 +81,12 @@ export class Container extends BaseScope implements Registry
         super.bootstrap();
     }
     
-    public override async dispose(): Promise<void>
+    public override dispose(): Promise<void>
     {
-        if (this.isDisposed)
-            return;
+        if (this._myDisposePromise == null)
+            this._myDisposePromise = super.dispose().then(() => this.componentRegistry.dispose());
         
-        await super.dispose();
-        
-        await this.componentRegistry.dispose();
+        return this._myDisposePromise;
     }
     
     public deregister(key: string): void
