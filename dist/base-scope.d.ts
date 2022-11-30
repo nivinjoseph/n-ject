@@ -8,6 +8,7 @@ export declare abstract class BaseScope implements Scope {
     private readonly _scopedInstanceRegistry;
     private _isBootstrapped;
     private _isDisposed;
+    private _disposePromise;
     protected get componentRegistry(): ComponentRegistry;
     protected get isBootstrapped(): boolean;
     protected get isDisposed(): boolean;

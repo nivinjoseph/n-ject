@@ -8,6 +8,7 @@ export declare class ComponentRegistration implements Disposable {
     private readonly _dependencies;
     private readonly _aliases;
     private _isDisposed;
+    private _disposePromise;
     get key(): string;
     get component(): Function | object;
     get lifestyle(): Lifestyle;
@@ -15,5 +16,6 @@ export declare class ComponentRegistration implements Disposable {
     get aliases(): ReadonlyArray<string>;
     constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>);
     dispose(): Promise<void>;
+    private _disposeComponent;
     private _getDependencies;
 }

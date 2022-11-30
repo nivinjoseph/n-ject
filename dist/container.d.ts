@@ -3,6 +3,7 @@ import { BaseScope } from "./base-scope";
 import { ComponentInstaller } from "./component-installer";
 import { Registry } from "./registry";
 export declare class Container extends BaseScope implements Registry {
+    private _myDisposePromise;
     constructor();
     registerTransient(key: string, component: Function, ...aliases: Array<string>): Registry;
     registerScoped(key: string, component: Function, ...aliases: Array<string>): Registry;

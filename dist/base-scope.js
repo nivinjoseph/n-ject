@@ -15,6 +15,7 @@ class BaseScope {
         this._scopedInstanceRegistry = new Map();
         this._isBootstrapped = false;
         this._isDisposed = false;
+        this._disposePromise = null;
         (0, n_defensive_1.given)(scopeType, "scopeType").ensureHasValue().ensureIsEnum(scope_type_1.ScopeType);
         (0, n_defensive_1.given)(componentRegistry, "componentRegistry").ensureHasValue().ensureIsObject();
         (0, n_defensive_1.given)(parentScope, "parentScope").ensureIsObject()
@@ -44,24 +45,14 @@ class BaseScope {
         return this._findInstance(registration);
     }
     dispose() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this._isDisposed)
-                return;
+        if (!this._isDisposed) {
             this._isDisposed = true;
-            let disposables;
-            try {
-                disposables = [...this._scopedInstanceRegistry.keys()]
-                    .map(t => this._scopedInstanceRegistry.get(t))
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                    .filter(t => !!t.dispose)
-                    .map(t => ({ type: t.getTypeName(), promise: t.dispose() }));
-            }
-            catch (error) {
-                console.error("Error: Failed to dispose one or more scoped components.");
-                console.error(error);
-                return;
-            }
-            for (const disposable of disposables) {
+            this._disposePromise = [...this._scopedInstanceRegistry.keys()]
+                .map(t => this._scopedInstanceRegistry.get(t))
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                .filter(t => !!t.dispose && typeof t.dispose === "function")
+                .map(t => ({ type: t.getTypeName(), promise: t.dispose() }))
+                .forEachAsync((disposable) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 try {
                     yield disposable.promise;
                 }
@@ -69,8 +60,9 @@ class BaseScope {
                     console.error(`Error: Failed to dispose component of type '${disposable.type}'.`);
                     console.error(error);
                 }
-            }
-        });
+            }));
+        }
+        return this._disposePromise;
     }
     bootstrap() {
         this._isBootstrapped = true;

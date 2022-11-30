@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Container = void 0;
-const tslib_1 = require("tslib");
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const base_scope_1 = require("./base-scope");
 const component_registry_1 = require("./component-registry");
@@ -14,6 +13,7 @@ const reserved_keys_1 = require("./reserved-keys");
 class Container extends base_scope_1.BaseScope {
     constructor() {
         super(scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null);
+        this._myDisposePromise = null;
     }
     registerTransient(key, component, ...aliases) {
         this._register(key, component, lifestyle_1.Lifestyle.Transient, ...aliases);
@@ -56,15 +56,9 @@ class Container extends base_scope_1.BaseScope {
         super.bootstrap();
     }
     dispose() {
-        const _super = Object.create(null, {
-            dispose: { get: () => super.dispose }
-        });
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this.isDisposed)
-                return;
-            yield _super.dispose.call(this);
-            yield this.componentRegistry.dispose();
-        });
+        if (this._myDisposePromise == null)
+            this._myDisposePromise = super.dispose().then(() => this.componentRegistry.dispose());
+        return this._myDisposePromise;
     }
     deregister(key) {
         if (this.isDisposed)

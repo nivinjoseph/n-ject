@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponentRegistry = void 0;
-const tslib_1 = require("tslib");
 const n_defensive_1 = require("@nivinjoseph/n-defensive");
 const lifestyle_1 = require("./lifestyle");
 const n_exception_1 = require("@nivinjoseph/n-exception");
@@ -14,6 +13,7 @@ class ComponentRegistry {
         // private readonly _registry: { [index: string]: ComponentRegistration } = {};
         this._registry = new Map();
         this._isDisposed = false;
+        this._disposePromise = null;
     }
     register(key, component, lifestyle, ...aliases) {
         if (this._isDisposed)
@@ -75,12 +75,11 @@ class ComponentRegistry {
         // return result;
     }
     dispose() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this._isDisposed)
-                return;
+        if (!this._isDisposed) {
             this._isDisposed = true;
-            yield Promise.all(this._registrations.map(t => t.dispose()));
-        });
+            this._disposePromise = Promise.all(this._registrations.map(t => t.dispose()));
+        }
+        return this._disposePromise;
     }
     _walkDependencyGraph(registration, visited = {}) {
         // check if current is in visited

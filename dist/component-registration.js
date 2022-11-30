@@ -10,6 +10,7 @@ const inject_1 = require("./inject");
 class ComponentRegistration {
     constructor(key, component, lifestyle, ...aliases) {
         this._isDisposed = false;
+        this._disposePromise = null;
         (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
         (0, n_defensive_1.given)(component, "component").ensureHasValue();
         (0, n_defensive_1.given)(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(lifestyle_js_1.Lifestyle);
@@ -31,11 +32,18 @@ class ComponentRegistration {
     get aliases() { return this._aliases; }
     dispose() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this._isDisposed)
-                return;
-            this._isDisposed = true;
+            if (this._isDisposed) {
+                this._isDisposed = true;
+                this._disposePromise = this._disposeComponent();
+            }
+            return this._disposePromise;
+        });
+    }
+    _disposeComponent() {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (typeof this._component !== "function" && this._component.dispose) {
+            if (typeof this._component !== "function" && this._component.dispose
+                && typeof this._component.dispose === "function") {
                 try {
                     yield this._component.dispose();
                 }

@@ -5,6 +5,7 @@ export declare class ComponentRegistry implements Disposable {
     private readonly _registrations;
     private readonly _registry;
     private _isDisposed;
+    private _disposePromise;
     register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void;
     deregister(key: string): void;
     verifyRegistrations(): void;
