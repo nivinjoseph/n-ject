@@ -2,7 +2,7 @@ import { given } from "@nivinjoseph/n-defensive";
 import { ClassDefinition } from "@nivinjoseph/n-util";
 
 
-export class Injector
+class Injector
 {
     private readonly _dependencyMap = new Map<ClassDefinition<any>, Array<string>>();
 
