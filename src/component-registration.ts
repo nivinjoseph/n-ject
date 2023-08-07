@@ -1,8 +1,7 @@
 import { Lifestyle } from "./lifestyle.js"; 
 import { given } from "@nivinjoseph/n-defensive";
-import "reflect-metadata";
-import { injectSymbol } from "./inject";
 import { Disposable } from "@nivinjoseph/n-util";
+import { dependencyMap } from "./inject.js";
 
 // internal
 export class ComponentRegistration implements Disposable
@@ -81,11 +80,13 @@ export class ComponentRegistration implements Disposable
         // if (Reflect.hasOwnMetadata(injectSymbol, this._component))
         //     return Reflect.getOwnMetadata(injectSymbol, this._component);
         // else
-        //     return this.detectDependencies();    
+        //     return this.detectDependencies();
         
-        return Reflect.hasOwnMetadata(injectSymbol, this._component)
-            ? Reflect.getOwnMetadata(injectSymbol, this._component) as Array<string>
-            : new Array<string>();
+        return dependencyMap.get(this._component as any) ?? new Array<string>();
+
+        // return Reflect.hasOwnMetadata(injectSymbol, this._component)
+        //     ? Reflect.getOwnMetadata(injectSymbol, this._component) as Array<string>
+        //     : new Array<string>();
     }
 
     

@@ -4,6 +4,7 @@ import { Lifestyle } from "./../../src/lifestyle";
 import { A } from "./a";
 import { B } from "./b";
 import { C } from "./c";
+import { D } from "./d";
 
 
 suite("ES6 tests", () =>
@@ -14,6 +15,7 @@ suite("ES6 tests", () =>
         cr.register("A", A, Lifestyle.Transient);
         cr.register("B", B, Lifestyle.Transient);
         cr.register("C", C, Lifestyle.Transient);
+        cr.register("D", D, Lifestyle.Transient);
         
         cr.verifyRegistrations();
         
