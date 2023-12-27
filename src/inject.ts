@@ -1,35 +1,27 @@
 import { given } from "@nivinjoseph/n-defensive";
 import { ClassDefinition } from "@nivinjoseph/n-util";
 
+//@ts-expect-error polyfill to use metadata object
+Symbol.metadata ??= Symbol("Symbol.metadata");
 
-class Injector
+export const injectionsKey = Symbol.for("@nivinjoseph/n-ject/inject");
+
+export function inject<This extends ClassDefinition<any>>(...dependencies: [string, ...Array<string>]): InjectClassDecorator<This>
 {
-    private readonly _dependencyMap = new Map<ClassDefinition<any>, Array<string>>();
-
-    public get dependencyMap(): Map<ClassDefinition<any>, Array<string>> { return this._dependencyMap; }
-
-
-    public inject<This extends ClassDefinition<any>>(...dependencies: [string, ...Array<string>]): InjectClassDecorator<This>
+    const decorator: InjectClassDecorator<This> = (_, context) =>
     {
-        const decorator: InjectClassDecorator<This> = (value, context) =>
-        {
-            given(context, "context")
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                .ensure(t => t.kind === "class", "inject should only be used on classes");
+        given(context, "context")
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => t.kind === "class", "inject should only be used on classes");
 
-            this._dependencyMap.set(value, dependencies);
-        };
+        context.metadata[injectionsKey] = dependencies;
+    };
 
-        return decorator;
-    }
+    return decorator;
 }
+
 
 type InjectClassDecorator<This extends ClassDefinition<any>> = (
     value: This,
     context: ClassDecoratorContext<This>
 ) => void;
-
-
-const injector = new Injector();
-export const inject = injector.inject.bind(injector);
-export const dependencyMap = injector.dependencyMap;

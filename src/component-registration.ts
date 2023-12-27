@@ -1,7 +1,7 @@
-import { Lifestyle } from "./lifestyle.js"; 
 import { given } from "@nivinjoseph/n-defensive";
 import { Disposable } from "@nivinjoseph/n-util";
-import { dependencyMap } from "./inject.js";
+import { injectionsKey } from "./inject.js";
+import { Lifestyle } from "./lifestyle.js";
 
 // internal
 export class ComponentRegistration implements Disposable
@@ -9,7 +9,7 @@ export class ComponentRegistration implements Disposable
     private readonly _key: string;
     private readonly _component: Function | object;
     private readonly _lifestyle: Lifestyle;
-    private readonly _dependencies: Array<string>;
+    private readonly _dependencies: ReadonlyArray<string>;
     private readonly _aliases: ReadonlyArray<string>;
     private _isDisposed = false;
     private _disposePromise: Promise<void> | null = null;
@@ -32,7 +32,7 @@ export class ComponentRegistration implements Disposable
             .ensure(t => t.every(u => u != null), "alias cannot null")
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
             .ensure(t => t.length === t.map(u => u.trim()).distinct().length, "duplicates detected");
-        
+
         this._key = key;
         this._component = component;
         this._lifestyle = lifestyle;
@@ -40,7 +40,7 @@ export class ComponentRegistration implements Disposable
         this._aliases = [...aliases.map(t => t.trim())];
     }
 
-    
+
     public async dispose(): Promise<void>
     {
         if (this._isDisposed)
@@ -49,10 +49,10 @@ export class ComponentRegistration implements Disposable
 
             this._disposePromise = this._disposeComponent();
         }
-        
+
         return this._disposePromise!;
     }
-    
+
     private async _disposeComponent(): Promise<void>
     {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -61,35 +61,34 @@ export class ComponentRegistration implements Disposable
         {
             try 
             {
-                await(<Disposable>this._component).dispose();
+                await (<Disposable>this._component).dispose();
             }
             catch (error)
             {
                 console.error(`Error: Failed to dispose component with key '${this._key}' of type '${(<Object>this._component).getTypeName()}'.`);
                 console.error(error);
             }
-        }   
+        }
     }
-    
-    
-    private _getDependencies(): Array<string>
+
+
+    private _getDependencies(): ReadonlyArray<string>
     {
         if (this._lifestyle === Lifestyle.Instance)
-            return new Array<string>();    
-        
-        // if (Reflect.hasOwnMetadata(injectSymbol, this._component))
-        //     return Reflect.getOwnMetadata(injectSymbol, this._component);
-        // else
-        //     return this.detectDependencies();
-        
-        return dependencyMap.get(this._component as any) ?? new Array<string>();
+            return new Array<string>();
 
-        // return Reflect.hasOwnMetadata(injectSymbol, this._component)
-        //     ? Reflect.getOwnMetadata(injectSymbol, this._component) as Array<string>
-        //     : new Array<string>();
+        const metadata = (this._component as any)[Symbol.metadata];
+        if (metadata == null)
+            return [];
+
+        const dependencies = metadata[injectionsKey];
+        if (dependencies == null)
+            return [];
+
+        return dependencies as ReadonlyArray<string>;
     }
 
-    
+
     // Borrowed from AngularJS implementation
     // private detectDependencies(): Array<string>
     // {

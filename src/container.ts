@@ -1,14 +1,14 @@
 import { given } from "@nivinjoseph/n-defensive";
-import { Scope } from "./scope";
-import { BaseScope } from "./base-scope";
-import { ComponentRegistry } from "./component-registry";
-import { ScopeType } from "./scope-type";
-import { Lifestyle } from "./lifestyle";
-import { ChildScope } from "./child-scope";
-import { ComponentInstaller } from "./component-installer";
-import { Registry } from "./registry";
 import { InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
-import { ReservedKeys } from "./reserved-keys";
+import { BaseScope } from "./base-scope.js";
+import { ChildScope } from "./child-scope.js";
+import { ComponentInstaller } from "./component-installer.js";
+import { ComponentRegistry } from "./component-registry.js";
+import { Lifestyle } from "./lifestyle.js";
+import { Registry } from "./registry.js";
+import { ReservedKeys } from "./reserved-keys.js";
+import { Scope } from "./scope.js";
+import { ScopeType } from "./scope-type.js";
 
 // public
 export class Container extends BaseScope implements Registry

@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2015",
+        "module": "NodeNext",
+        "target": "ES2022",
+        "lib": [
+            "ES2023",
+            "esnext.decorators"
+        ],
         "strict": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
@@ -19,6 +23,8 @@
         "importHelpers": true,
         "noEmitHelpers": true,
         "noImplicitOverride": true,
-        "pretty": true
+        "pretty": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
     }
 }

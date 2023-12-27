@@ -1,31 +1,33 @@
-import * as assert from "assert";
-import { ComponentRegistry } from "./../src/component-registry";
-import { Lifestyle } from "./../src/lifestyle";
-import { inject } from "./../src/index";
 import { given } from "@nivinjoseph/n-defensive";
+import assert from "node:assert";
+import { afterEach, beforeEach, describe, test } from "node:test";
+import { ComponentRegistry } from "./../src/component-registry.js";
+import { inject } from "./../src/index.js";
+import { Lifestyle } from "./../src/lifestyle.js";
 
 // registered dependant but not dependency
 
-suite("ComponentRegistry", () =>
+await describe("ComponentRegistry", async () =>
 {
     let cr: ComponentRegistry;
 
-    setup(() =>
+    beforeEach(() =>
     {
+        console.log("running hook before");
         cr = new ComponentRegistry();
     });
-    
-    teardown(async () =>
+
+    afterEach(async () =>
     {
         await cr.dispose();
     });
-    
-    suite("Registry Validation", () =>
+
+    await describe("Registry Validation", async () =>
     {
-        test("Should throw exception when dependant A is registered but dependancy B is not", () =>
+        await test("Should throw exception when dependant A is registered but dependency B is not", () =>
         {
             class B { }
-            
+
             @inject("b")
             class A
             {
@@ -34,7 +36,7 @@ suite("ComponentRegistry", () =>
                     given(b, "b").ensureHasValue().ensureIsType(B);
                 }
             }
-            
+
             cr.register("a", A, Lifestyle.Transient);
             assert.throws(() =>
             {
@@ -42,15 +44,15 @@ suite("ComponentRegistry", () =>
             });
         });
     });
-    
-    suite("Dependency graph", () =>
+
+    await describe("Dependency graph", async () =>
     {
-        test("Given Tree verification, should succeed", () =>
+        await test("Given Tree verification, should succeed", () =>
         {
             class B { }
-            
+
             class C { }
-            
+
             @inject("b", "c")
             class A
             {
@@ -69,10 +71,10 @@ suite("ComponentRegistry", () =>
             assert.ok(true);
         });
 
-        test("Given DAG verification, should succeed", () =>
+        await test("Given DAG verification, should succeed", () =>
         {
             class C { }
-            
+
             @inject("c")
             class B
             {
@@ -81,7 +83,7 @@ suite("ComponentRegistry", () =>
                     given(c, "c").ensureHasValue().ensureIsType(C);
                 }
             }
-            
+
             @inject("b", "c")
             class A
             {
@@ -100,7 +102,7 @@ suite("ComponentRegistry", () =>
             assert.ok(true);
         });
 
-        test("Given DCG verification, should fail", () =>
+        await test("Given DCG verification, should fail", () =>
         {
             @inject("a")
             class C
@@ -110,7 +112,7 @@ suite("ComponentRegistry", () =>
                     given(a, "a").ensureHasValue();
                 }
             }
-            
+
             @inject("c")
             class B
             {
@@ -119,7 +121,7 @@ suite("ComponentRegistry", () =>
                     given(c, "c").ensureHasValue().ensureIsType(C);
                 }
             }
-            
+
             @inject("b")
             class A
             {
@@ -138,7 +140,7 @@ suite("ComponentRegistry", () =>
             });
         });
 
-        test("Given DCG (immediate cycle) verification, should fail", () =>
+        await test("Given DCG (immediate cycle) verification, should fail", () =>
         {
             @inject("a")
             class C
@@ -148,7 +150,7 @@ suite("ComponentRegistry", () =>
                     given(a, "a").ensureHasValue();
                 }
             }
-            
+
             @inject("c")
             class B
             {
@@ -157,7 +159,7 @@ suite("ComponentRegistry", () =>
                     given(c, "c").ensureHasValue().ensureIsType(C);
                 }
             }
-            
+
             @inject("b", "c")
             class A
             {
@@ -177,7 +179,7 @@ suite("ComponentRegistry", () =>
             });
         });
 
-        test("Given DCG (late cycle) verification, should fail", () =>
+        await test("Given DCG (late cycle) verification, should fail", () =>
         {
             @inject("a")
             class D
@@ -187,7 +189,7 @@ suite("ComponentRegistry", () =>
                     given(a, "a").ensureHasValue();
                 }
             }
-            
+
             @inject("d")
             class C
             {
@@ -196,7 +198,7 @@ suite("ComponentRegistry", () =>
                     given(d, "d").ensureHasValue().ensureIsType(D);
                 }
             }
-            
+
             @inject("c")
             class B
             {
@@ -205,7 +207,7 @@ suite("ComponentRegistry", () =>
                     given(c, "c").ensureHasValue().ensureIsType(C);
                 }
             }
-            
+
             @inject("b", "c")
             class A
             {
@@ -226,10 +228,10 @@ suite("ComponentRegistry", () =>
             });
         });
 
-        test("Given DCG (self cycle) verification, should fail", () =>
+        await test("Given DCG (self cycle) verification, should fail", () =>
         {
             class C { }
-            
+
             @inject("c", "b")
             class B
             {
@@ -239,7 +241,7 @@ suite("ComponentRegistry", () =>
                     given(b, "b").ensureHasValue().ensureIsType(B);
                 }
             }
-            
+
             @inject("b", "c")
             class A
             {
@@ -258,12 +260,12 @@ suite("ComponentRegistry", () =>
                 cr.verifyRegistrations();
             });
         });
-    }); 
-    
-    suite("Dependency Lifestyle", () =>
+    });
+
+    await describe("Dependency Lifestyle", async () =>
     {
         class B { }
-        
+
         @inject("b")
         class A
         {
@@ -272,110 +274,110 @@ suite("ComponentRegistry", () =>
                 given(b, "b").ensureHasValue().ensureIsType(B);
             }
         }
-        
-        suite("Singleton", () =>
+
+        await describe("Singleton", async () =>
         {
-            setup(() =>
+            beforeEach(() =>
             {
                 cr.register("a", A, Lifestyle.Singleton);
             });
-            
+
             // Singleton -> Singleton
-            test("Given the singleton to singleton dependency, should succeed", () =>
+            await test("Given the singleton to singleton dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Singleton);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
-            
+
             // Singleton -> Scoped
-            test("Given the singleton to scoped dependency, should fail", () =>
+            await test("Given the singleton to scoped dependency, should fail", () =>
             {
                 cr.register("b", B, Lifestyle.Scoped);
-                
+
                 assert.throws(() =>
                 {
                     cr.verifyRegistrations();
                 });
             });
-            
+
             // Singleton -> Transient
-            test("Given the singleton to transient dependency, should succeed", () =>
+            await test("Given the singleton to transient dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Transient);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
         });
-        
-        suite("Scoped", () =>
+
+        await describe("Scoped", async () =>
         {
-            setup(() =>
+            beforeEach(() =>
             {
                 cr.register("a", A, Lifestyle.Scoped);
             });
-            
+
             // Scoped -> Singleton
-            test("Given the scoped to singleton dependency, should succeed", () =>
+            await test("Given the scoped to singleton dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Singleton);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
-            
+
             // Scoped -> Scoped
-            test("Given the scoped to scoped dependency, should succeed", () =>
+            await test("Given the scoped to scoped dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Scoped);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
-            
+
             // Scoped -> Transient
-            test("Given the scoped to transient dependency, should succeed", () =>
+            await test("Given the scoped to transient dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Transient);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
         });
-        
-        suite("Transient", () =>
+
+        await describe("Transient", async () =>
         {
-            setup(() =>
+            beforeEach(() =>
             {
                 cr.register("a", A, Lifestyle.Transient);
             });
-            
+
             // Transient -> Singleton
-            test("Given the transient to singleton dependency, should succeed", () =>
+            await test("Given the transient to singleton dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Singleton);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
-            
+
             // Transient -> Scoped
-            test("Given the transient to scoped dependency, should succeed", () =>
+            await test("Given the transient to scoped dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Scoped);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
-            
+
             // Transient -> Transient
-            test("Given the transient to transient dependency, should succeed", () =>
+            await test("Given the transient to transient dependency, should succeed", () =>
             {
                 cr.register("b", B, Lifestyle.Transient);
                 cr.verifyRegistrations();
-                
+
                 assert.ok(true);
             });
         });

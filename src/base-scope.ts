@@ -1,12 +1,12 @@
 import { given } from "@nivinjoseph/n-defensive";
-import { Scope } from "./scope";
-import { ScopeType } from "./scope-type";
-import { Lifestyle } from "./lifestyle";
 import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
-import { ComponentRegistry } from "./component-registry";
-import { ComponentRegistration } from "./component-registration";
-import { ReservedKeys } from "./reserved-keys";
 import { ClassDefinition, Disposable } from "@nivinjoseph/n-util";
+import { ComponentRegistration } from "./component-registration.js";
+import { ComponentRegistry } from "./component-registry.js";
+import { Lifestyle } from "./lifestyle.js";
+import { ReservedKeys } from "./reserved-keys.js";
+import { Scope } from "./scope.js";
+import { ScopeType } from "./scope-type.js";
 
 // internal
 export abstract class BaseScope implements Scope
