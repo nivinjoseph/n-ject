@@ -1,6 +1,6 @@
 {
     "name": "@nivinjoseph/n-ject",
-    "version": "2.0.5",
+    "version": "3.0.0",
     "description": "IOC container",
     "packageManager": "yarn@4.0.2",
     "type": "module",
@@ -44,7 +44,7 @@
         "@nivinjoseph/n-defensive": "^2.0.1",
         "@nivinjoseph/n-exception": "^2.0.1",
         "@nivinjoseph/n-ext": "^2.0.1",
-        "@nivinjoseph/n-util": "^1.0.80",
+        "@nivinjoseph/n-util": "^2.0.1",
         "tslib": "^2.6.2"
     },
     "engineStrict": true,

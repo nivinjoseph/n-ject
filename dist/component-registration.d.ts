@@ -1,6 +1,5 @@
-import { Lifestyle } from "./lifestyle.js";
-import "reflect-metadata";
 import { Disposable } from "@nivinjoseph/n-util";
+import { Lifestyle } from "./lifestyle.js";
 export declare class ComponentRegistration implements Disposable {
     private readonly _key;
     private readonly _component;
@@ -19,3 +18,4 @@ export declare class ComponentRegistration implements Disposable {
     private _disposeComponent;
     private _getDependencies;
 }
+//# sourceMappingURL=component-registration.d.ts.map

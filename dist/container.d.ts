@@ -1,7 +1,7 @@
-import { Scope } from "./scope";
-import { BaseScope } from "./base-scope";
-import { ComponentInstaller } from "./component-installer";
-import { Registry } from "./registry";
+import { BaseScope } from "./base-scope.js";
+import { ComponentInstaller } from "./component-installer.js";
+import { Registry } from "./registry.js";
+import { Scope } from "./scope.js";
 export declare class Container extends BaseScope implements Registry {
     private _myDisposePromise;
     constructor();
@@ -16,3 +16,4 @@ export declare class Container extends BaseScope implements Registry {
     deregister(key: string): void;
     private _register;
 }
+//# sourceMappingURL=container.d.ts.map

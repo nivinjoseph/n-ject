@@ -1,13 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReservedKeys = void 0;
-class ReservedKeys {
+export class ReservedKeys {
+    static serviceLocator = "ServiceLocator";
+    static all = [ReservedKeys.serviceLocator];
     /**
      * static
      */
     constructor() { }
 }
-exports.ReservedKeys = ReservedKeys;
-ReservedKeys.serviceLocator = "ServiceLocator";
-ReservedKeys.all = [ReservedKeys.serviceLocator];
 //# sourceMappingURL=reserved-keys.js.map

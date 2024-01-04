@@ -1,57 +1,54 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Container = void 0;
-const n_defensive_1 = require("@nivinjoseph/n-defensive");
-const base_scope_1 = require("./base-scope");
-const component_registry_1 = require("./component-registry");
-const scope_type_1 = require("./scope-type");
-const lifestyle_1 = require("./lifestyle");
-const child_scope_1 = require("./child-scope");
-const n_exception_1 = require("@nivinjoseph/n-exception");
-const reserved_keys_1 = require("./reserved-keys");
+import { given } from "@nivinjoseph/n-defensive";
+import { InvalidOperationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
+import { BaseScope } from "./base-scope.js";
+import { ChildScope } from "./child-scope.js";
+import { ComponentRegistry } from "./component-registry.js";
+import { Lifestyle } from "./lifestyle.js";
+import { ReservedKeys } from "./reserved-keys.js";
+import { ScopeType } from "./scope-type.js";
 // public
-class Container extends base_scope_1.BaseScope {
+export class Container extends BaseScope {
+    _myDisposePromise = null;
     constructor() {
-        super(scope_type_1.ScopeType.Root, new component_registry_1.ComponentRegistry(), null);
-        this._myDisposePromise = null;
+        super(ScopeType.Root, new ComponentRegistry(), null);
     }
     registerTransient(key, component, ...aliases) {
-        this._register(key, component, lifestyle_1.Lifestyle.Transient, ...aliases);
+        this._register(key, component, Lifestyle.Transient, ...aliases);
         return this;
     }
     registerScoped(key, component, ...aliases) {
-        this._register(key, component, lifestyle_1.Lifestyle.Scoped, ...aliases);
+        this._register(key, component, Lifestyle.Scoped, ...aliases);
         return this;
     }
     registerSingleton(key, component, ...aliases) {
-        this._register(key, component, lifestyle_1.Lifestyle.Singleton, ...aliases);
+        this._register(key, component, Lifestyle.Singleton, ...aliases);
         return this;
     }
     registerInstance(key, instance, ...aliases) {
-        this._register(key, instance, lifestyle_1.Lifestyle.Instance, ...aliases);
+        this._register(key, instance, Lifestyle.Instance, ...aliases);
         return this;
     }
     install(componentInstaller) {
         if (this.isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("install after bootstrap");
-        (0, n_defensive_1.given)(componentInstaller, "componentInstaller").ensureHasValue();
+            throw new InvalidOperationException("install after bootstrap");
+        given(componentInstaller, "componentInstaller").ensureHasValue();
         componentInstaller.install(this);
         return this;
     }
     createScope() {
         if (this.isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         if (!this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("createScope after bootstrap");
-        return new child_scope_1.ChildScope(this.componentRegistry, this);
+            throw new InvalidOperationException("createScope after bootstrap");
+        return new ChildScope(this.componentRegistry, this);
     }
     bootstrap() {
         if (this.isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("bootstrap after bootstrap");
+            throw new InvalidOperationException("bootstrap after bootstrap");
         this.componentRegistry.verifyRegistrations();
         super.bootstrap();
     }
@@ -62,26 +59,25 @@ class Container extends base_scope_1.BaseScope {
     }
     deregister(key) {
         if (this.isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("register after bootstrap");
-        (0, n_defensive_1.given)(key, "key").ensureHasValue();
+            throw new InvalidOperationException("register after bootstrap");
+        given(key, "key").ensureHasValue();
         this.componentRegistry.deregister(key);
     }
     _register(key, component, lifestyle, ...aliases) {
         if (this.isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
-            throw new n_exception_1.InvalidOperationException("register after bootstrap");
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString()
-            .ensure(t => !reserved_keys_1.ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
-        (0, n_defensive_1.given)(component, "component").ensureHasValue();
-        (0, n_defensive_1.given)(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
-        (0, n_defensive_1.given)(aliases, "aliases").ensureHasValue().ensureIsArray()
+            throw new InvalidOperationException("register after bootstrap");
+        given(key, "key").ensureHasValue().ensureIsString()
+            .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
+        given(component, "component").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
             .ensure(t => t.length === t.distinct().length, "duplicates detected");
         this.componentRegistry.register(key, component, lifestyle, ...aliases);
     }
 }
-exports.Container = Container;
 //# sourceMappingURL=container.js.map

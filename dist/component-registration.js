@@ -1,20 +1,25 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ComponentRegistration = void 0;
-const tslib_1 = require("tslib");
-const lifestyle_js_1 = require("./lifestyle.js");
-const n_defensive_1 = require("@nivinjoseph/n-defensive");
-require("reflect-metadata");
-const inject_1 = require("./inject");
+import { given } from "@nivinjoseph/n-defensive";
+import { injectionsKey } from "./inject.js";
+import { Lifestyle } from "./lifestyle.js";
 // internal
-class ComponentRegistration {
+export class ComponentRegistration {
+    _key;
+    _component;
+    _lifestyle;
+    _dependencies;
+    _aliases;
+    _isDisposed = false;
+    _disposePromise = null;
+    get key() { return this._key; }
+    get component() { return this._component; }
+    get lifestyle() { return this._lifestyle; }
+    get dependencies() { return this._dependencies; }
+    get aliases() { return this._aliases; }
     constructor(key, component, lifestyle, ...aliases) {
-        this._isDisposed = false;
-        this._disposePromise = null;
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
-        (0, n_defensive_1.given)(component, "component").ensureHasValue();
-        (0, n_defensive_1.given)(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(lifestyle_js_1.Lifestyle);
-        (0, n_defensive_1.given)(aliases, "aliases").ensureHasValue().ensureIsArray()
+        given(key, "key").ensureHasValue().ensureIsString();
+        given(component, "component").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(Lifestyle);
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             .ensure(t => t.every(u => u != null), "alias cannot null")
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
@@ -25,46 +30,36 @@ class ComponentRegistration {
         this._dependencies = this._getDependencies();
         this._aliases = [...aliases.map(t => t.trim())];
     }
-    get key() { return this._key; }
-    get component() { return this._component; }
-    get lifestyle() { return this._lifestyle; }
-    get dependencies() { return this._dependencies; }
-    get aliases() { return this._aliases; }
-    dispose() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            if (this._isDisposed) {
-                this._isDisposed = true;
-                this._disposePromise = this._disposeComponent();
-            }
-            return this._disposePromise;
-        });
+    async dispose() {
+        if (this._isDisposed) {
+            this._isDisposed = true;
+            this._disposePromise = this._disposeComponent();
+        }
+        return this._disposePromise;
     }
-    _disposeComponent() {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (typeof this._component !== "function" && this._component.dispose
-                && typeof this._component.dispose === "function") {
-                try {
-                    yield this._component.dispose();
-                }
-                catch (error) {
-                    console.error(`Error: Failed to dispose component with key '${this._key}' of type '${this._component.getTypeName()}'.`);
-                    console.error(error);
-                }
+    async _disposeComponent() {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (typeof this._component !== "function" && this._component.dispose
+            && typeof this._component.dispose === "function") {
+            try {
+                await this._component.dispose();
             }
-        });
+            catch (error) {
+                console.error(`Error: Failed to dispose component with key '${this._key}' of type '${this._component.getTypeName()}'.`);
+                console.error(error);
+            }
+        }
     }
     _getDependencies() {
-        if (this._lifestyle === lifestyle_js_1.Lifestyle.Instance)
+        if (this._lifestyle === Lifestyle.Instance)
             return new Array();
-        // if (Reflect.hasOwnMetadata(injectSymbol, this._component))
-        //     return Reflect.getOwnMetadata(injectSymbol, this._component);
-        // else
-        //     return this.detectDependencies();    
-        return Reflect.hasOwnMetadata(inject_1.injectSymbol, this._component)
-            ? Reflect.getOwnMetadata(inject_1.injectSymbol, this._component)
-            : new Array();
+        const metadata = this._component[Symbol.metadata];
+        if (metadata == null)
+            return [];
+        const dependencies = metadata[injectionsKey];
+        if (dependencies == null)
+            return [];
+        return dependencies;
     }
 }
-exports.ComponentRegistration = ComponentRegistration;
 //# sourceMappingURL=component-registration.js.map

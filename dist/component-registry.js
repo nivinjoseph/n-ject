@@ -1,48 +1,43 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ComponentRegistry = void 0;
-const n_defensive_1 = require("@nivinjoseph/n-defensive");
-const lifestyle_1 = require("./lifestyle");
-const n_exception_1 = require("@nivinjoseph/n-exception");
-const component_registration_1 = require("./component-registration");
-const reserved_keys_1 = require("./reserved-keys");
+import { given } from "@nivinjoseph/n-defensive";
+import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
+import { ComponentRegistration } from "./component-registration.js";
+import { Lifestyle } from "./lifestyle.js";
+import { ReservedKeys } from "./reserved-keys.js";
 // internal
-class ComponentRegistry {
-    constructor() {
-        this._registrations = new Array();
-        // private readonly _registry: { [index: string]: ComponentRegistration } = {};
-        this._registry = new Map();
-        this._isDisposed = false;
-        this._disposePromise = null;
-    }
+export class ComponentRegistry {
+    _registrations = new Array();
+    // private readonly _registry: { [index: string]: ComponentRegistration } = {};
+    _registry = new Map();
+    _isDisposed = false;
+    _disposePromise = null;
     register(key, component, lifestyle, ...aliases) {
         if (this._isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
-        (0, n_defensive_1.given)(component, "component").ensureHasValue();
-        (0, n_defensive_1.given)(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(lifestyle_1.Lifestyle);
-        (0, n_defensive_1.given)(aliases, "aliases").ensureHasValue().ensureIsArray()
+            throw new ObjectDisposedException(this);
+        given(key, "key").ensureHasValue().ensureIsString();
+        given(component, "component").ensureHasValue();
+        given(lifestyle, "lifestyle").ensureHasValue().ensureIsEnum(Lifestyle);
+        given(aliases, "aliases").ensureHasValue().ensureIsArray()
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             .ensure(t => t.every(u => u != null), "alias cannot null")
             .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
             .ensure(t => t.length === t.map(u => u.trim()).distinct().length, "duplicates detected");
         key = key.trim();
         if (this._registry.has(key))
-            throw new n_exception_1.ApplicationException(`Duplicate registration for key '${key}'`);
+            throw new ApplicationException(`Duplicate registration for key '${key}'`);
         aliases.forEach(t => {
             const alias = t.trim();
             if (this._registry.has(alias))
-                throw new n_exception_1.ApplicationException(`Duplicate registration for alias '${alias}'`);
+                throw new ApplicationException(`Duplicate registration for alias '${alias}'`);
         });
-        const registration = new component_registration_1.ComponentRegistration(key, component, lifestyle, ...aliases);
+        const registration = new ComponentRegistration(key, component, lifestyle, ...aliases);
         this._registrations.push(registration);
         this._registry.set(registration.key, registration);
         registration.aliases.forEach(t => this._registry.set(t, registration));
     }
     deregister(key) {
         if (this._isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
+            throw new ObjectDisposedException(this);
+        given(key, "key").ensureHasValue().ensureIsString();
         key = key.trim();
         if (!this._registry.has(key))
             return;
@@ -53,17 +48,16 @@ class ComponentRegistry {
     }
     verifyRegistrations() {
         if (this._isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
+            throw new ObjectDisposedException(this);
         for (const registration of this._registrations)
             this._walkDependencyGraph(registration);
     }
     find(key) {
-        var _a;
         if (this._isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
+            throw new ObjectDisposedException(this);
+        given(key, "key").ensureHasValue().ensureIsString();
         key = key.trim();
-        return (_a = this._registry.get(key)) !== null && _a !== void 0 ? _a : null;
+        return this._registry.get(key) ?? null;
         // FIXME: do we still need the code below
         // let result = this._registry[key];
         // if (!result)
@@ -88,14 +82,14 @@ class ComponentRegistry {
         // walk the dependencies reusing the visited
         // remove current from visited
         if (visited[registration.key] || registration.aliases.some(t => !!visited[t]))
-            throw new n_exception_1.ApplicationException(`Circular dependency detected with registration '${registration.key}'.`);
+            throw new ApplicationException(`Circular dependency detected with registration '${registration.key}'.`);
         visited[registration.key] = registration;
         registration.aliases.forEach(t => visited[t] = registration);
         for (const dependency of registration.dependencies) {
-            if (dependency === reserved_keys_1.ReservedKeys.serviceLocator)
+            if (dependency === ReservedKeys.serviceLocator)
                 continue;
             if (!this._registry.has(dependency))
-                throw new n_exception_1.ApplicationException(`Unregistered dependency '${dependency}' detected.`);
+                throw new ApplicationException(`Unregistered dependency '${dependency}' detected.`);
             const dependencyRegistration = this._registry.get(dependency);
             // rules
             // singleton --> singleton ==> good (child & root)
@@ -107,13 +101,12 @@ class ComponentRegistry {
             // transient --> singleton ==> good (child & root)
             // transient --> scoped =====> good (child only)
             // transient --> transient ==> good (child & root)
-            if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton && dependencyRegistration.lifestyle === lifestyle_1.Lifestyle.Scoped)
-                throw new n_exception_1.ApplicationException("Singleton with a scoped dependency detected.");
+            if (registration.lifestyle === Lifestyle.Singleton && dependencyRegistration.lifestyle === Lifestyle.Scoped)
+                throw new ApplicationException("Singleton with a scoped dependency detected.");
             this._walkDependencyGraph(dependencyRegistration, visited);
         }
         visited[registration.key] = null;
         registration.aliases.forEach(t => visited[t] = null);
     }
 }
-exports.ComponentRegistry = ComponentRegistry;
 //# sourceMappingURL=component-registry.js.map

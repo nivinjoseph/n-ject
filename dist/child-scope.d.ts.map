@@ -1,0 +1,1 @@
+{"version":3,"file":"child-scope.d.ts","sourceRoot":"","sources":["../src/child-scope.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,SAAS,EAAE,MAAM,iBAAiB,CAAC;AAC5C,OAAO,EAAE,iBAAiB,EAAE,MAAM,yBAAyB,CAAC;AAC5D,OAAO,EAAE,KAAK,EAAE,MAAM,YAAY,CAAC;AAInC,qBAAa,UAAW,SAAQ,SAAS;gBAElB,iBAAiB,EAAE,iBAAiB,EAAE,WAAW,EAAE,KAAK;IAUpE,WAAW,IAAI,KAAK;CAS9B"}

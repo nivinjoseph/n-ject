@@ -4,3 +4,4 @@ export declare enum Lifestyle {
     Singleton = 3,
     Instance = 4
 }
+//# sourceMappingURL=lifestyle.d.ts.map

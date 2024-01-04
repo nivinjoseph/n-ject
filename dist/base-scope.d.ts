@@ -1,6 +1,6 @@
-import { Scope } from "./scope";
-import { ScopeType } from "./scope-type";
-import { ComponentRegistry } from "./component-registry";
+import { ComponentRegistry } from "./component-registry.js";
+import { Scope } from "./scope.js";
+import { ScopeType } from "./scope-type.js";
 export declare abstract class BaseScope implements Scope {
     private readonly _scopeType;
     private readonly _componentRegistry;
@@ -22,3 +22,4 @@ export declare abstract class BaseScope implements Scope {
     private _findScopedInstance;
     private _createInstance;
 }
+//# sourceMappingURL=base-scope.d.ts.map

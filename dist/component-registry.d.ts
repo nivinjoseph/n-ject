@@ -1,6 +1,6 @@
-import { Lifestyle } from "./lifestyle";
-import { ComponentRegistration } from "./component-registration";
 import { Disposable } from "@nivinjoseph/n-util";
+import { ComponentRegistration } from "./component-registration.js";
+import { Lifestyle } from "./lifestyle.js";
 export declare class ComponentRegistry implements Disposable {
     private readonly _registrations;
     private readonly _registry;
@@ -13,3 +13,4 @@ export declare class ComponentRegistry implements Disposable {
     dispose(): Promise<void>;
     private _walkDependencyGraph;
 }
+//# sourceMappingURL=component-registry.d.ts.map

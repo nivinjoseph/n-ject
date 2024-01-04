@@ -1,47 +1,47 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseScope = void 0;
-const tslib_1 = require("tslib");
-const n_defensive_1 = require("@nivinjoseph/n-defensive");
-const scope_type_1 = require("./scope-type");
-const lifestyle_1 = require("./lifestyle");
-const n_exception_1 = require("@nivinjoseph/n-exception");
-const component_registration_1 = require("./component-registration");
-const reserved_keys_1 = require("./reserved-keys");
+import { given } from "@nivinjoseph/n-defensive";
+import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
+import { ComponentRegistration } from "./component-registration.js";
+import { Lifestyle } from "./lifestyle.js";
+import { ReservedKeys } from "./reserved-keys.js";
+import { ScopeType } from "./scope-type.js";
 // internal
-class BaseScope {
-    constructor(scopeType, componentRegistry, parentScope) {
-        // private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
-        this._scopedInstanceRegistry = new Map();
-        this._isBootstrapped = false;
-        this._isDisposed = false;
-        this._disposePromise = null;
-        (0, n_defensive_1.given)(scopeType, "scopeType").ensureHasValue().ensureIsEnum(scope_type_1.ScopeType);
-        (0, n_defensive_1.given)(componentRegistry, "componentRegistry").ensureHasValue().ensureIsObject();
-        (0, n_defensive_1.given)(parentScope, "parentScope").ensureIsObject()
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            .ensure(t => scopeType === scope_type_1.ScopeType.Child ? t != null : t == null, "cannot be null if scope is a child scope and has to be null if scope is root scope");
-        // this._id = Uuid.create();
-        this._scopeType = scopeType;
-        this._componentRegistry = componentRegistry;
-        this._parentScope = parentScope;
-    }
+export class BaseScope {
+    // private readonly _id: string;
+    _scopeType;
+    _componentRegistry;
+    _parentScope;
+    // private readonly _scopedInstanceRegistry: {[index: string]: object} = {};
+    _scopedInstanceRegistry = new Map();
+    _isBootstrapped = false;
+    _isDisposed = false;
+    _disposePromise = null;
     get componentRegistry() { return this._componentRegistry; }
     get isBootstrapped() { return this._isBootstrapped; }
     get isDisposed() { return this._isDisposed; }
     // public get id(): string { return this._id; }
     get scopeType() { return this._scopeType; }
+    constructor(scopeType, componentRegistry, parentScope) {
+        given(scopeType, "scopeType").ensureHasValue().ensureIsEnum(ScopeType);
+        given(componentRegistry, "componentRegistry").ensureHasValue().ensureIsObject();
+        given(parentScope, "parentScope").ensureIsObject()
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => scopeType === ScopeType.Child ? t != null : t == null, "cannot be null if scope is a child scope and has to be null if scope is root scope");
+        // this._id = Uuid.create();
+        this._scopeType = scopeType;
+        this._componentRegistry = componentRegistry;
+        this._parentScope = parentScope;
+    }
     resolve(key) {
         if (this._isDisposed)
-            throw new n_exception_1.ObjectDisposedException(this);
-        (0, n_defensive_1.given)(this, "this").ensure(t => t.isBootstrapped, "not bootstrapped");
-        (0, n_defensive_1.given)(key, "key").ensureHasValue().ensureIsString();
+            throw new ObjectDisposedException(this);
+        given(this, "this").ensure(t => t.isBootstrapped, "not bootstrapped");
+        given(key, "key").ensureHasValue().ensureIsString();
         key = key.trim();
-        if (key === reserved_keys_1.ReservedKeys.serviceLocator)
+        if (key === ReservedKeys.serviceLocator)
             return this;
         const registration = this._componentRegistry.find(key);
         if (!registration)
-            throw new n_exception_1.ApplicationException(`No component with key '${key}' registered.`);
+            throw new ApplicationException(`No component with key '${key}' registered.`);
         return this._findInstance(registration);
     }
     dispose() {
@@ -52,15 +52,15 @@ class BaseScope {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 .filter(t => !!t.dispose && typeof t.dispose === "function")
                 .map(t => ({ type: t.getTypeName(), promise: t.dispose() }))
-                .forEachAsync((disposable) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                .forEachAsync(async (disposable) => {
                 try {
-                    yield disposable.promise;
+                    await disposable.promise;
                 }
                 catch (error) {
                     console.error(`Error: Failed to dispose component of type '${disposable.type}'.`);
                     console.error(error);
                 }
-            }));
+            });
         }
         return this._disposePromise;
     }
@@ -68,19 +68,19 @@ class BaseScope {
         this._isBootstrapped = true;
     }
     _findInstance(registration) {
-        (0, n_defensive_1.given)(registration, "registration").ensureHasValue().ensureIsType(component_registration_1.ComponentRegistration);
-        if (registration.lifestyle === lifestyle_1.Lifestyle.Instance) {
+        given(registration, "registration").ensureHasValue().ensureIsType(ComponentRegistration);
+        if (registration.lifestyle === Lifestyle.Instance) {
             return registration.component;
         }
-        else if (registration.lifestyle === lifestyle_1.Lifestyle.Singleton) {
-            if (this.scopeType === scope_type_1.ScopeType.Child)
+        else if (registration.lifestyle === Lifestyle.Singleton) {
+            if (this.scopeType === ScopeType.Child)
                 return this._parentScope.resolve(registration.key);
             else
                 return this._findScopedInstance(registration);
         }
-        else if (registration.lifestyle === lifestyle_1.Lifestyle.Scoped) {
-            if (this.scopeType === scope_type_1.ScopeType.Root)
-                throw new n_exception_1.ApplicationException(`Cannot resolve component '${registration.key}' with scoped lifestyle from root scope.`);
+        else if (registration.lifestyle === Lifestyle.Scoped) {
+            if (this.scopeType === ScopeType.Root)
+                throw new ApplicationException(`Cannot resolve component '${registration.key}' with scoped lifestyle from root scope.`);
             else
                 return this._findScopedInstance(registration);
         }
@@ -89,7 +89,7 @@ class BaseScope {
         }
     }
     _findScopedInstance(registration) {
-        (0, n_defensive_1.given)(registration, "registration").ensureHasValue().ensureIsType(component_registration_1.ComponentRegistration);
+        given(registration, "registration").ensureHasValue().ensureIsType(ComponentRegistration);
         let instance = this._scopedInstanceRegistry.get(registration.key);
         if (instance == null) {
             instance = this._createInstance(registration);
@@ -108,20 +108,19 @@ class BaseScope {
         // }
     }
     _createInstance(registration) {
-        (0, n_defensive_1.given)(registration, "registration").ensureHasValue().ensureIsType(component_registration_1.ComponentRegistration);
+        given(registration, "registration").ensureHasValue().ensureIsType(ComponentRegistration);
         const dependencyInstances = [];
         for (const dependency of registration.dependencies) {
-            if (dependency === reserved_keys_1.ReservedKeys.serviceLocator) {
+            if (dependency === ReservedKeys.serviceLocator) {
                 dependencyInstances.push(this);
                 continue;
             }
             const dependencyRegistration = this._componentRegistry.find(dependency);
             if (!dependencyRegistration)
-                throw new n_exception_1.ApplicationException(`Dependency '${dependency}' of component '${registration.key}' not registered.`);
+                throw new ApplicationException(`Dependency '${dependency}' of component '${registration.key}' not registered.`);
             dependencyInstances.push(this._findInstance(dependencyRegistration));
         }
         return new registration.component(...dependencyInstances);
     }
 }
-exports.BaseScope = BaseScope;
 //# sourceMappingURL=base-scope.js.map

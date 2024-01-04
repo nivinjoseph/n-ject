@@ -1,11 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.inject = exports.injectSymbol = void 0;
-require("reflect-metadata");
-exports.injectSymbol = Symbol.for("@nivinjoseph/n-ject/inject");
-// public
-function inject(...dependencies) {
-    return (target) => Reflect.defineMetadata(exports.injectSymbol, dependencies, target);
+import { given } from "@nivinjoseph/n-defensive";
+//@ts-expect-error polyfill to use metadata object
+Symbol.metadata ??= Symbol("Symbol.metadata");
+export const injectionsKey = Symbol.for("@nivinjoseph/n-ject/inject");
+export function inject(...dependencies) {
+    const decorator = (_, context) => {
+        given(context, "context")
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => t.kind === "class", "inject should only be used on classes");
+        context.metadata[injectionsKey] = dependencies;
+    };
+    return decorator;
 }
-exports.inject = inject;
 //# sourceMappingURL=inject.js.map
