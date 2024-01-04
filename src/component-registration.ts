@@ -72,7 +72,7 @@ export class ComponentRegistration implements Disposable
     }
 
 
-    private _getDependencies(): ReadonlyArray<string>
+    private _getDependencies(): Array<string>
     {
         if (this._lifestyle === Lifestyle.Instance)
             return new Array<string>();
@@ -85,7 +85,7 @@ export class ComponentRegistration implements Disposable
         if (dependencies == null)
             return [];
 
-        return dependencies as ReadonlyArray<string>;
+        return dependencies as Array<string>;
     }
 
 
