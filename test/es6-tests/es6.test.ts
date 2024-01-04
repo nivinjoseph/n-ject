@@ -6,7 +6,7 @@ import { A } from "./a.js";
 import { B } from "./b.js";
 import { C } from "./c.js";
 import { D } from "./d.js";
-import { F } from "./f.js";
+import { E } from "./e.js";
 
 
 await describe.only("ES6 tests", async () =>
@@ -18,7 +18,7 @@ await describe.only("ES6 tests", async () =>
         cr.register("B", B, Lifestyle.Transient);
         cr.register("C", C, Lifestyle.Transient);
         cr.register("D", D, Lifestyle.Transient);
-        cr.register("F", F, Lifestyle.Transient);
+        cr.register("E", E, Lifestyle.Transient);
 
         cr.verifyRegistrations();
 
@@ -34,6 +34,16 @@ await describe.only("ES6 tests", async () =>
         const resolvedC = cr.find("C");
         assert.ok(resolvedC != null);
         assert.ok(resolvedC.dependencies.length === 0);
+        
+        const resolvedD = cr.find("D");
+        assert.ok(resolvedD != null);
+        assert.ok(resolvedD.dependencies.length === 1);
+        assert.ok(resolvedD.dependencies.takeFirst() === "C");
+        
+        const resolvedE = cr.find("E");
+        assert.ok(resolvedE != null);
+        assert.ok(resolvedE.dependencies.length === 1);
+        assert.ok(resolvedE.dependencies.takeFirst() === "A");
 
         await cr.dispose();
 

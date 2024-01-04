@@ -3,7 +3,7 @@ import { D } from "./d.js";
 
 
 @inject("A")
-export class F extends D
+export class E extends D
 {
-    
+
 }

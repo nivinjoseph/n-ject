@@ -21,7 +21,7 @@ export function inject<This extends ClassDefinition<any>>(...dependencies: [stri
 }
 
 
-type InjectClassDecorator<This extends ClassDefinition<any>> = (
+export type InjectClassDecorator<This extends ClassDefinition<any>> = (
     value: This,
     context: ClassDecoratorContext<This>
 ) => void;
