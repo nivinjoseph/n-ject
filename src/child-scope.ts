@@ -1,9 +1,9 @@
-import { BaseScope } from "./base-scope";
 import { given } from "@nivinjoseph/n-defensive";
-import { ScopeType } from "./scope-type";
-import { ComponentRegistry } from "./component-registry";
-import { Scope } from "./scope";
 import { ObjectDisposedException } from "@nivinjoseph/n-exception";
+import { BaseScope } from "./base-scope.js";
+import { ComponentRegistry } from "./component-registry.js";
+import { Scope } from "./scope.js";
+import { ScopeType } from "./scope-type.js";
 
 // internal
 export class ChildScope extends BaseScope

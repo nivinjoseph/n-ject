@@ -1,14 +1,11 @@
 import "@nivinjoseph/n-ext";
-import { Container } from "./container";
-import { Scope } from "./scope";
-import { ScopeType } from "./scope-type";
-import { ComponentInstaller } from "./component-installer";
-import { Registry } from "./registry";
-import { inject } from "./inject";
-import { ServiceLocator } from "./service-locator";
+import { ComponentInstaller } from "./component-installer.js";
+import { Container } from "./container.js";
+import { InjectClassDecorator, inject } from "./inject.js";
+import { Registry } from "./registry.js";
+import { Scope } from "./scope.js";
+import { ScopeType } from "./scope-type.js";
+import { ServiceLocator } from "./service-locator.js";
 
 
-export 
-{
-    Container, Scope, ScopeType, ComponentInstaller, Registry, inject, ServiceLocator
-};
+export { ComponentInstaller, Container, Registry, Scope, ScopeType, ServiceLocator, inject, InjectClassDecorator };

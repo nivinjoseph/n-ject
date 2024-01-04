@@ -1,7 +1,7 @@
 import { given } from "@nivinjoseph/n-defensive";
-import { inject } from "./../../src/inject";
-import { B } from "./b";
-import { C } from "./c";
+import { inject } from "./../../src/index.js";
+import { B } from "./b.js";
+import { C } from "./c.js";
 
 @inject("B", "C")
 export class A

@@ -1,9 +1,9 @@
 import { given } from "@nivinjoseph/n-defensive";
-import { Lifestyle } from "./lifestyle";
 import { ApplicationException, ObjectDisposedException } from "@nivinjoseph/n-exception";
-import { ComponentRegistration } from "./component-registration";
-import { ReservedKeys } from "./reserved-keys";
 import { Disposable } from "@nivinjoseph/n-util";
+import { ComponentRegistration } from "./component-registration.js";
+import { Lifestyle } from "./lifestyle.js";
+import { ReservedKeys } from "./reserved-keys.js";
 
 // internal
 export class ComponentRegistry implements Disposable

@@ -1,9 +1,27 @@
-import "reflect-metadata";
+import { given } from "@nivinjoseph/n-defensive";
+import { ClassDefinition } from "@nivinjoseph/n-util";
 
-export const injectSymbol = Symbol.for("@nivinjoseph/n-ject/inject"); 
+//@ts-expect-error polyfill to use metadata object
+Symbol.metadata ??= Symbol("Symbol.metadata");
 
-// public
-export function inject(...dependencies: Array<string>): Function
+export const injectionsKey = Symbol.for("@nivinjoseph/n-ject/inject");
+
+export function inject<This extends ClassDefinition<any>>(...dependencies: [string, ...Array<string>]): InjectClassDecorator<This>
 {
-    return (target: Function) => Reflect.defineMetadata(injectSymbol, dependencies, target);
+    const decorator: InjectClassDecorator<This> = (_, context) =>
+    {
+        given(context, "context")
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            .ensure(t => t.kind === "class", "inject should only be used on classes");
+
+        context.metadata[injectionsKey] = dependencies;
+    };
+
+    return decorator;
 }
+
+
+export type InjectClassDecorator<This extends ClassDefinition<any>> = (
+    value: This,
+    context: ClassDecoratorContext<This>
+) => void;
