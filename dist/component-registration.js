@@ -31,7 +31,7 @@ export class ComponentRegistration {
         this._aliases = [...aliases.map(t => t.trim())];
     }
     async dispose() {
-        if (this._isDisposed) {
+        if (!this._isDisposed) {
             this._isDisposed = true;
             this._disposePromise = this._disposeComponent();
         }
