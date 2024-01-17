@@ -43,7 +43,7 @@ export class ComponentRegistration implements Disposable
 
     public async dispose(): Promise<void>
     {
-        if (this._isDisposed)
+        if (!this._isDisposed)
         {
             this._isDisposed = true;
 
