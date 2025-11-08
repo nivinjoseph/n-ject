@@ -1,1 +1,1 @@
-{"version":3,"file":"lifestyle.d.ts","sourceRoot":"","sources":["../src/lifestyle.ts"],"names":[],"mappings":"AACA,oBAAY,SAAS;IAEjB,SAAS,IAAI;IACb,MAAM,IAAI;IACV,SAAS,IAAI;IACb,QAAQ,IAAI;CACf"}
+{"version":3,"file":"lifestyle.d.ts","sourceRoot":"","sources":["../src/lifestyle.ts"],"names":[],"mappings":"AAAA;;;GAGG;AACH,oBAAY,SAAS;IAEjB;;;OAGG;IACH,SAAS,IAAI;IAEb;;;OAGG;IACH,MAAM,IAAI;IAEV;;;OAGG;IACH,SAAS,IAAI;IAEb;;;OAGG;IACH,QAAQ,IAAI;CACf"}

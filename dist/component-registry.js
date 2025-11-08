@@ -10,6 +10,7 @@ export class ComponentRegistry {
     _registry = new Map();
     _isDisposed = false;
     _disposePromise = null;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     register(key, component, lifestyle, ...aliases) {
         if (this._isDisposed)
             throw new ObjectDisposedException(this);

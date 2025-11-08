@@ -4,6 +4,7 @@ import { Lifestyle } from "./lifestyle.js";
 // internal
 export class ComponentRegistration {
     _key;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     _component;
     _lifestyle;
     _dependencies;
@@ -11,10 +12,12 @@ export class ComponentRegistration {
     _isDisposed = false;
     _disposePromise = null;
     get key() { return this._key; }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     get component() { return this._component; }
     get lifestyle() { return this._lifestyle; }
     get dependencies() { return this._dependencies; }
     get aliases() { return this._aliases; }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     constructor(key, component, lifestyle, ...aliases) {
         given(key, "key").ensureHasValue().ensureIsString();
         given(component, "component").ensureHasValue();
