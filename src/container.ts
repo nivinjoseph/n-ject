@@ -34,6 +34,7 @@ export class Container extends BaseScope implements Registry
      * @param aliases - Optional aliases for the component
      * @returns The container instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public registerTransient(key: string, component: Function, ...aliases: Array<string>): Registry
     {
         this._register(key, component, Lifestyle.Transient, ...aliases);
@@ -48,6 +49,7 @@ export class Container extends BaseScope implements Registry
      * @param aliases - Optional aliases for the component
      * @returns The container instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public registerScoped(key: string, component: Function, ...aliases: Array<string>): Registry
     {
         this._register(key, component, Lifestyle.Scoped, ...aliases);
@@ -62,6 +64,7 @@ export class Container extends BaseScope implements Registry
      * @param aliases - Optional aliases for the component
      * @returns The container instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public registerSingleton(key: string, component: Function, ...aliases: Array<string>): Registry
     {
         this._register(key, component, Lifestyle.Singleton, ...aliases);
@@ -179,6 +182,7 @@ export class Container extends BaseScope implements Registry
      * @throws ObjectDisposedException if the container is disposed
      * @throws InvalidOperationException if the container is bootstrapped
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private _register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void
     {
         if (this.isDisposed)

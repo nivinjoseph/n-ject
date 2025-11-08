@@ -25,6 +25,7 @@ export interface Registry
      * @param aliases - Optional aliases for the component
      * @returns The registry instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     registerTransient(key: string, component: Function, ...aliases: Array<string>): Registry;
 
     /**
@@ -35,6 +36,7 @@ export interface Registry
      * @param aliases - Optional aliases for the component
      * @returns The registry instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     registerScoped(key: string, component: Function, ...aliases: Array<string>): Registry;
 
     /**
@@ -45,6 +47,7 @@ export interface Registry
      * @param aliases - Optional aliases for the component
      * @returns The registry instance for method chaining
      */
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     registerSingleton(key: string, component: Function, ...aliases: Array<string>): Registry;
 
     /**

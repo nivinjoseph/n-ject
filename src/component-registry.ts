@@ -15,6 +15,7 @@ export class ComponentRegistry implements Disposable
     private _disposePromise: Promise<void> | null = null;
 
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public register(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>): void
     {
         if (this._isDisposed)

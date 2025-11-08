@@ -7,6 +7,7 @@ import { Lifestyle } from "./lifestyle.js";
 export class ComponentRegistration implements Disposable
 {
     private readonly _key: string;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private readonly _component: Function | object;
     private readonly _lifestyle: Lifestyle;
     private readonly _dependencies: ReadonlyArray<string>;
@@ -16,12 +17,14 @@ export class ComponentRegistration implements Disposable
 
 
     public get key(): string { return this._key; }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public get component(): Function | object { return this._component; }
     public get lifestyle(): Lifestyle { return this._lifestyle; }
     public get dependencies(): ReadonlyArray<string> { return this._dependencies; }
     public get aliases(): ReadonlyArray<string> { return this._aliases; }
 
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public constructor(key: string, component: Function | object, lifestyle: Lifestyle, ...aliases: Array<string>)
     {
         given(key, "key").ensureHasValue().ensureIsString();
