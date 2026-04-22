@@ -95,7 +95,7 @@ export class Container extends BaseScope {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         if (!this.isBootstrapped)
-            throw new InvalidOperationException("createScope after bootstrap");
+            throw new InvalidOperationException("createScope before bootstrap");
         return new ChildScope(this.componentRegistry, this);
     }
     /**
@@ -132,7 +132,7 @@ export class Container extends BaseScope {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
-            throw new InvalidOperationException("register after bootstrap");
+            throw new InvalidOperationException("deregister after bootstrap");
         given(key, "key").ensureHasValue();
         this.componentRegistry.deregister(key);
     }
@@ -151,13 +151,21 @@ export class Container extends BaseScope {
             throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
             throw new InvalidOperationException("register after bootstrap");
+        const isReserved = (value) => {
+            const normalized = value.trim().toLowerCase();
+            return ReservedKeys.all.some(r => r.toLowerCase() === normalized);
+        };
         given(key, "key").ensureHasValue().ensureIsString()
-            .ensure(t => !ReservedKeys.all.contains(t.trim()), "cannot use reserved key");
+            .ensure(t => t.trim().length > 0, "cannot be empty or whitespace")
+            .ensure(t => !isReserved(t), "cannot use reserved key");
         given(component, "component").ensureHasValue();
         given(lifestyle, "lifestyle").ensureHasValue().ensureIsNumber();
         given(aliases, "aliases").ensureHasValue().ensureIsArray()
-            .ensure(t => t.every(u => u !== key), "alias cannot be the same as key")
-            .ensure(t => t.length === t.distinct().length, "duplicates detected");
+            .ensure(t => t.every(u => typeof u === "string"), "alias must be a string")
+            .ensure(t => t.every(u => u.trim().length > 0), "alias cannot be empty or whitespace")
+            .ensure(t => t.every(u => u.trim() !== key.trim()), "alias cannot be the same as key")
+            .ensure(t => t.every(u => !isReserved(u)), "alias cannot use reserved key")
+            .ensure(t => t.length === t.map(u => u.trim()).distinct().length, "duplicates detected");
         this.componentRegistry.register(key, component, lifestyle, ...aliases);
     }
 }

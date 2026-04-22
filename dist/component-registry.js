@@ -76,22 +76,23 @@ export class ComponentRegistry {
         }
         return this._disposePromise;
     }
-    _walkDependencyGraph(registration, visited = {}) {
+    _walkDependencyGraph(registration, visited = new Map()) {
         // check if current is in visited
         // add current to visited
         // check if the dependencies are registered
         // walk the dependencies reusing the visited
         // remove current from visited
-        if (visited[registration.key] || registration.aliases.some(t => !!visited[t]))
+        if (visited.has(registration.key) || registration.aliases.some(t => visited.has(t)))
             throw new ApplicationException(`Circular dependency detected with registration '${registration.key}'.`);
-        visited[registration.key] = registration;
-        registration.aliases.forEach(t => visited[t] = registration);
+        visited.set(registration.key, registration);
+        registration.aliases.forEach(t => visited.set(t, registration));
         for (const dependency of registration.dependencies) {
             if (dependency === ReservedKeys.serviceLocator)
                 continue;
-            if (!this._registry.has(dependency))
+            const dependencyKey = dependency.trim();
+            if (!this._registry.has(dependencyKey))
                 throw new ApplicationException(`Unregistered dependency '${dependency}' detected.`);
-            const dependencyRegistration = this._registry.get(dependency);
+            const dependencyRegistration = this._registry.get(dependencyKey);
             // rules
             // singleton --> singleton ==> good (child & root)
             // singleton --> scoped =====> bad
@@ -106,8 +107,8 @@ export class ComponentRegistry {
                 throw new ApplicationException("Singleton with a scoped dependency detected.");
             this._walkDependencyGraph(dependencyRegistration, visited);
         }
-        visited[registration.key] = null;
-        registration.aliases.forEach(t => visited[t] = null);
+        visited.delete(registration.key);
+        registration.aliases.forEach(t => visited.delete(t));
     }
 }
 //# sourceMappingURL=component-registry.js.map

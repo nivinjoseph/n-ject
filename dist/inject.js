@@ -1,6 +1,10 @@
 import { given } from "@nivinjoseph/n-defensive";
-//@ts-expect-error polyfill to use metadata object
-Symbol.metadata ??= Symbol("Symbol.metadata");
+// Polyfill Symbol.metadata for runtimes that don't yet ship the TC39 decorator
+// metadata well-known symbol. Uses Symbol.for so independent copies of this
+// module (or other libraries polyfilling the same way) converge on a single
+// symbol identity instead of creating private, non-interoperable symbols.
+// @ts-expect-error Symbol.metadata may not be declared by the current lib target
+Symbol.metadata ??= Symbol.for("Symbol.metadata");
 export const injectionsKey = Symbol.for("@nivinjoseph/n-ject/inject");
 /**
  * Decorator that marks a class for dependency injection.

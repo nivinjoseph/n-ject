@@ -47,8 +47,7 @@ export class BaseScope {
     dispose() {
         if (!this._isDisposed) {
             this._isDisposed = true;
-            this._disposePromise = [...this._scopedInstanceRegistry.keys()]
-                .map(t => this._scopedInstanceRegistry.get(t))
+            this._disposePromise = [...new Set(this._scopedInstanceRegistry.values())]
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 .filter(t => !!t.dispose && typeof t.dispose === "function")
                 .map(t => ({ type: t.getTypeName(), promise: t.dispose() }))
