@@ -9,9 +9,9 @@ import { D } from "./d.js";
 import { E } from "./e.js";
 
 
-await describe.only("ES6 tests", async () =>
+await describe("ES6 tests", async () =>
 {
-    await test.only("test", async () =>
+    await test("test", async () =>
     {
         const cr = new ComponentRegistry();
         cr.register("A", A, Lifestyle.Transient);

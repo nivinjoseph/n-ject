@@ -72,14 +72,13 @@ export abstract class BaseScope implements Scope
         {
             this._isDisposed = true;
 
-            this._disposePromise = [...this._scopedInstanceRegistry.keys()]
-                .map(t => this._scopedInstanceRegistry.get(t))
+            this._disposePromise = [...new Set(this._scopedInstanceRegistry.values())]
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 .filter(t => !!(<Disposable>t).dispose && typeof (<Disposable>t).dispose === "function")
                 .map(t => ({ type: (<Object>t).getTypeName(), promise: (<Disposable>t).dispose() }))
                 .forEachAsync(async (disposable) =>
                 {
-                    try 
+                    try
                     {
                         await disposable.promise;
                     }

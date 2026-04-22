@@ -13,7 +13,6 @@ await describe("ComponentRegistry", async () =>
 
     beforeEach(() =>
     {
-        console.log("running hook before");
         cr = new ComponentRegistry();
     });
 
@@ -380,6 +379,119 @@ await describe("ComponentRegistry", async () =>
 
                 assert.ok(true);
             });
+        });
+    });
+
+    await describe("Dependency key normalization", async () =>
+    {
+        await test("should verify successfully when @inject key has surrounding whitespace", () =>
+        {
+            class B { }
+
+            @inject(" b ")
+            class A
+            {
+                public constructor(b: B)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                }
+            }
+
+            cr.register("a", A, Lifestyle.Transient);
+            cr.register("b", B, Lifestyle.Transient);
+
+            cr.verifyRegistrations();
+
+            assert.ok(true);
+        });
+    });
+
+    await describe("Inherited @inject metadata", async () =>
+    {
+        await test("a subclass without its own @inject inherits the parent's dependencies", () =>
+        {
+            class C { }
+
+            @inject("c")
+            class Parent
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+
+            class Child extends Parent { }
+
+            cr.register("parent", Parent, Lifestyle.Transient);
+            cr.register("child", Child, Lifestyle.Transient);
+            cr.register("c", C, Lifestyle.Transient);
+
+            cr.verifyRegistrations();
+
+            const childReg = cr.find("child");
+            assert.ok(childReg != null);
+            assert.strictEqual(childReg.dependencies.length, 1);
+            assert.strictEqual(childReg.dependencies[0], "c");
+        });
+
+        await test("a subclass @inject replaces the parent's dependencies entirely", () =>
+        {
+            class C { }
+            class D { }
+
+            @inject("c")
+            class Parent
+            {
+                public constructor(c: C)
+                {
+                    given(c, "c").ensureHasValue().ensureIsType(C);
+                }
+            }
+
+            @inject("d")
+            class Child extends Parent
+            {
+                public constructor(d: D)
+                {
+                    super(new C());
+                    given(d, "d").ensureHasValue().ensureIsType(D);
+                }
+            }
+
+            cr.register("child", Child, Lifestyle.Transient);
+            cr.register("d", D, Lifestyle.Transient);
+
+            cr.verifyRegistrations();
+
+            const childReg = cr.find("child");
+            assert.ok(childReg != null);
+            assert.strictEqual(childReg.dependencies.length, 1);
+            assert.strictEqual(childReg.dependencies[0], "d");
+        });
+    });
+
+    await describe("Prototype-pollution-resistant circular check", async () =>
+    {
+        await test("should not treat '__proto__' as pre-visited when walking an unrelated registration", () =>
+        {
+            class B { }
+
+            @inject("b")
+            class Proto
+            {
+                public constructor(b: B)
+                {
+                    given(b, "b").ensureHasValue().ensureIsType(B);
+                }
+            }
+
+            cr.register("__proto__", Proto, Lifestyle.Transient);
+            cr.register("b", B, Lifestyle.Transient);
+
+            cr.verifyRegistrations();
+
+            assert.ok(true);
         });
     });
 });
