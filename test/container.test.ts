@@ -24,16 +24,17 @@ await describe("Container", async () =>
 
         class TestInstaller implements ComponentInstaller
         {
-            public install(registry: Registry): void
+            public install(registry: Registry): Promise<void>
             {
                 registry.registerTransient("a", A);
+                return Promise.resolve();
             }
         }
-        await test("should resolve successfully when using the installer based registration", () =>
+        await test("should resolve successfully when using the installer based registration", async () =>
         {
             const inst = new TestInstaller();
             cont.install(inst);
-            cont.bootstrap();
+            await cont.bootstrap();
             const a = cont.resolve("a");
 
             assert.ok(a instanceof A);
@@ -52,9 +53,9 @@ await describe("Container", async () =>
             });
         });
 
-        await test("should throw exception when registering after bootstrapping", () => 
+        await test("should throw exception when registering after bootstrapping", async () =>
         {
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() =>
             {
@@ -62,18 +63,19 @@ await describe("Container", async () =>
             });
         });
 
-        await test("should throw exception when installing installer after bootstrapping", () => 
+        await test("should throw exception when installing installer after bootstrapping", async () =>
         {
             class TestInstaller implements ComponentInstaller
             {
-                public install(registry: Registry): void
+                public install(registry: Registry): Promise<void>
                 {
                     registry.registerTransient("a", A);
+                    return Promise.resolve();
                 }
             }
 
             const inst = new TestInstaller();
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() =>
             {
@@ -81,9 +83,9 @@ await describe("Container", async () =>
             });
         });
 
-        await test("should throw exception when resolving unregistered key", () => 
+        await test("should throw exception when resolving unregistered key", async () =>
         {
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() =>
             {
@@ -130,18 +132,18 @@ await describe("Container", async () =>
                     cont.registerSingleton("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should resolve successfully from root scope", () => 
+                await test("should resolve successfully from root scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const a = cont.resolve("a");
 
                     assert.ok(a instanceof A);
@@ -156,11 +158,11 @@ await describe("Container", async () =>
                     cont.registerScoped("b", B);
                 });
 
-                await test("should throw exception when bootstraping", () =>
+                await test("should throw exception when bootstraping", async () =>
                 {
-                    assert.throws(() =>
+                    await assert.rejects(async () =>
                     {
-                        cont.bootstrap();
+                        await cont.bootstrap();
                     });
                 });
             });
@@ -173,18 +175,18 @@ await describe("Container", async () =>
                     cont.registerTransient("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should resolve successfully from root scope", () => 
+                await test("should resolve successfully from root scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const a = cont.resolve("a");
 
                     assert.ok(a instanceof A);
@@ -207,20 +209,20 @@ await describe("Container", async () =>
                     cont.registerSingleton("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should throw exception when resolving from root scope", () => 
+                await test("should throw exception when resolving from root scope", async () =>
                 {
+                    await cont.bootstrap();
                     assert.throws(() =>
                     {
-                        cont.bootstrap();
                         cont.resolve("a");
                     });
                 });
@@ -234,20 +236,20 @@ await describe("Container", async () =>
                     cont.registerScoped("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should throw exception when resolving from root scope", () => 
+                await test("should throw exception when resolving from root scope", async () =>
                 {
+                    await cont.bootstrap();
                     assert.throws(() =>
                     {
-                        cont.bootstrap();
                         cont.resolve("a");
                     });
                 });
@@ -261,20 +263,20 @@ await describe("Container", async () =>
                     cont.registerTransient("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should throw exception when resolving from root scope", () => 
+                await test("should throw exception when resolving from root scope", async () =>
                 {
+                    await cont.bootstrap();
                     assert.throws(() =>
                     {
-                        cont.bootstrap();
                         cont.resolve("a");
                     });
                 });
@@ -296,18 +298,18 @@ await describe("Container", async () =>
                     cont.registerSingleton("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should resolve successfully from root scope", () => 
+                await test("should resolve successfully from root scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const a = cont.resolve("a");
 
                     assert.ok(a instanceof A);
@@ -322,20 +324,20 @@ await describe("Container", async () =>
                     cont.registerScoped("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should throw exception when resolving from root scope", () => 
+                await test("should throw exception when resolving from root scope", async () =>
                 {
+                    await cont.bootstrap();
                     assert.throws(() =>
                     {
-                        cont.bootstrap();
                         cont.resolve("a");
                     });
                 });
@@ -349,18 +351,18 @@ await describe("Container", async () =>
                     cont.registerTransient("b", B);
                 });
 
-                await test("should resolve successfully from child scope", () =>
+                await test("should resolve successfully from child scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const child = cont.createScope();
                     const a = child.resolve("a");
 
                     assert.ok(a instanceof A);
                 });
 
-                await test("should resolve successfully from root scope", () => 
+                await test("should resolve successfully from root scope", async () =>
                 {
-                    cont.bootstrap();
+                    await cont.bootstrap();
                     const a = cont.resolve("a");
 
                     assert.ok(a instanceof A);
@@ -375,10 +377,10 @@ await describe("Container", async () =>
 
         await describe("Given Singleton A", async () =>
         {
-            beforeEach(() =>
+            beforeEach(async () =>
             {
                 cont.registerSingleton("a", A);
-                cont.bootstrap();
+                await cont.bootstrap();
             });
 
             await test("should resolve successfully from child scope", async  () =>
@@ -406,10 +408,10 @@ await describe("Container", async () =>
 
         await describe("Given Scoped A", async () =>
         {
-            beforeEach(() =>
+            beforeEach(async () =>
             {
                 cont.registerScoped("a", A);
-                cont.bootstrap();
+                await cont.bootstrap();
             });
 
             await test("should resolve successfully from the child scope", () =>
@@ -447,10 +449,10 @@ await describe("Container", async () =>
 
         await describe("Given Transient A", async () =>
         {
-            beforeEach(() =>
+            beforeEach(async () =>
             {
                 cont.registerTransient("a", A);
-                cont.bootstrap();
+                await cont.bootstrap();
             });
 
             await test("should resolve successfully from the child scope", () =>
@@ -529,11 +531,11 @@ await describe("Container", async () =>
             assert.throws(() => cont.createScope(), /createScope before bootstrap/);
         });
 
-        await test("deregister after bootstrap should throw with an accurate message", () =>
+        await test("deregister after bootstrap should throw with an accurate message", async () =>
         {
             class A { }
             cont.registerTransient("a", A);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() => cont.deregister("a"), /deregister after bootstrap/);
         });
@@ -555,7 +557,7 @@ await describe("Container", async () =>
             }
 
             cont.registerScoped("a", A, "alias1", "alias2");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
             child.resolve("a");
@@ -579,7 +581,7 @@ await describe("Container", async () =>
             }
 
             cont.registerSingleton("a", A, "alias1", "alias2");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             cont.resolve("a");
 
@@ -591,11 +593,11 @@ await describe("Container", async () =>
 
     await describe("registerInstance", async () =>
     {
-        await test("should resolve the exact same instance from root and child scopes", () =>
+        await test("should resolve the exact same instance from root and child scopes", async () =>
         {
             const config = { env: "test" };
             cont.registerInstance("config", config);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
 
@@ -621,7 +623,7 @@ await describe("Container", async () =>
             };
 
             cont.registerInstance("x", instance);
-            cont.bootstrap();
+            await cont.bootstrap();
             cont.resolve("x");
 
             await cont.dispose();
@@ -629,11 +631,11 @@ await describe("Container", async () =>
             assert.strictEqual(disposed, true);
         });
 
-        await test("should resolve via alias", () =>
+        await test("should resolve via alias", async () =>
         {
             const config = { env: "test" };
             cont.registerInstance("config", config, "settings");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.strictEqual(cont.resolve("settings"), config);
         });
@@ -643,35 +645,35 @@ await describe("Container", async () =>
     {
         class A { }
 
-        await test("should remove a registration so resolve throws after bootstrap", () =>
+        await test("should remove a registration so resolve throws after bootstrap", async () =>
         {
             cont.registerTransient("a", A);
             cont.deregister("a");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() => cont.resolve("a"));
         });
 
-        await test("should also remove aliases", () =>
+        await test("should also remove aliases", async () =>
         {
             cont.registerTransient("a", A, "alias1");
             cont.deregister("a");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() => cont.resolve("alias1"));
         });
 
-        await test("should be a no-op when key is not registered", () =>
+        await test("should be a no-op when key is not registered", async () =>
         {
             cont.deregister("does-not-exist");
-            cont.bootstrap();
+            await cont.bootstrap();
             assert.ok(true);
         });
 
-        await test("should throw after bootstrap", () =>
+        await test("should throw after bootstrap", async () =>
         {
             cont.registerTransient("a", A);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.throws(() => cont.deregister("a"));
         });
@@ -681,10 +683,10 @@ await describe("Container", async () =>
     {
         class A { }
 
-        await test("should resolve the same instance via key and alias for a singleton", () =>
+        await test("should resolve the same instance via key and alias for a singleton", async () =>
         {
             cont.registerSingleton("a", A, "alias1", "alias2");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const viaKey = cont.resolve("a");
             const viaAlias1 = cont.resolve("alias1");
@@ -695,20 +697,20 @@ await describe("Container", async () =>
             assert.strictEqual(viaKey, viaAlias2);
         });
 
-        await test("should resolve the same scoped instance via key and alias within the same scope", () =>
+        await test("should resolve the same scoped instance via key and alias within the same scope", async () =>
         {
             cont.registerScoped("a", A, "alias1");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
 
             assert.strictEqual(child.resolve("a"), child.resolve("alias1"));
         });
 
-        await test("should resolve a transient as distinct instances whether via key or alias", () =>
+        await test("should resolve a transient as distinct instances whether via key or alias", async () =>
         {
             cont.registerTransient("a", A, "alias1");
-            cont.bootstrap();
+            await cont.bootstrap();
 
             assert.notStrictEqual(cont.resolve("a"), cont.resolve("alias1"));
         });
@@ -730,11 +732,11 @@ await describe("Container", async () =>
             }
         }
 
-        await test("should inject the resolving scope when a dependency is ServiceLocator", () =>
+        await test("should inject the resolving scope when a dependency is ServiceLocator", async () =>
         {
             cont.registerScoped("a", A);
             cont.registerTransient("b", B);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
             const a = child.resolve<A>("a");
@@ -742,9 +744,9 @@ await describe("Container", async () =>
             assert.ok(a.locator.resolve("b") instanceof B);
         });
 
-        await test("should allow resolving ServiceLocator directly from a scope", () =>
+        await test("should allow resolving ServiceLocator directly from a scope", async () =>
         {
-            cont.bootstrap();
+            await cont.bootstrap();
             const child = cont.createScope();
 
             assert.strictEqual(child.resolve("ServiceLocator"), child);
@@ -755,10 +757,10 @@ await describe("Container", async () =>
     {
         class A { }
 
-        await test("should create a grandchild scope from a child scope", () =>
+        await test("should create a grandchild scope from a child scope", async () =>
         {
             cont.registerTransient("a", A);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
             const grandchild = child.createScope();
@@ -766,10 +768,10 @@ await describe("Container", async () =>
             assert.ok(grandchild.resolve("a") instanceof A);
         });
 
-        await test("should give each scope its own scoped instance", () =>
+        await test("should give each scope its own scoped instance", async () =>
         {
             cont.registerScoped("a", A);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
             const grandchild = child.createScope();
@@ -777,10 +779,10 @@ await describe("Container", async () =>
             assert.notStrictEqual(child.resolve("a"), grandchild.resolve("a"));
         });
 
-        await test("should share a singleton across parent, child, and grandchild scopes", () =>
+        await test("should share a singleton across parent, child, and grandchild scopes", async () =>
         {
             cont.registerSingleton("a", A);
-            cont.bootstrap();
+            await cont.bootstrap();
 
             const child = cont.createScope();
             const grandchild = child.createScope();

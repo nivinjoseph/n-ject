@@ -96,7 +96,7 @@ export abstract class BaseScope implements Scope
     public abstract createScope(): Scope;
     
     
-    protected bootstrap(): void
+    protected bootstrapInternal(): void
     {
         this._isBootstrapped = true;
     }

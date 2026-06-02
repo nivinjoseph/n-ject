@@ -16,6 +16,7 @@ import { ScopeType } from "./scope-type.js";
  */
 export class Container extends BaseScope implements Registry
 {
+    private readonly _installers = new Array<ComponentInstaller>();
     private _myDisposePromise: Promise<void> | null = null;
 
     /**
@@ -101,7 +102,7 @@ export class Container extends BaseScope implements Registry
             throw new InvalidOperationException("install after bootstrap");
 
         given(componentInstaller, "componentInstaller").ensureHasValue();
-        componentInstaller.install(this);
+        this._installers.push(componentInstaller);
         return this;
     }
 
@@ -128,17 +129,19 @@ export class Container extends BaseScope implements Registry
      * @throws ObjectDisposedException if the container is disposed
      * @throws InvalidOperationException if the container is already bootstrapped
      */
-    public override bootstrap(): void
+    public async bootstrap(): Promise<void>
     {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
 
         if (this.isBootstrapped)
             throw new InvalidOperationException("bootstrap after bootstrap");
+        
+        await this._installers.forEachAsync((t) => t.install(this), 1);
 
         this.componentRegistry.verifyRegistrations();
 
-        super.bootstrap();
+        super.bootstrapInternal();
     }
 
     /**

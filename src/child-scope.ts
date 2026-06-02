@@ -15,7 +15,7 @@ export class ChildScope extends BaseScope
 
         super(ScopeType.Child, componentRegistry, parentScope);
         
-        this.bootstrap();
+        this.bootstrapInternal();
     }
     // cannot put this method in the base class due to circular reference issue
     public createScope(): Scope
