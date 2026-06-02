@@ -63,7 +63,7 @@ export class BaseScope {
         }
         return this._disposePromise;
     }
-    bootstrap() {
+    bootstrapInternal() {
         this._isBootstrapped = true;
     }
     _findInstance(registration) {

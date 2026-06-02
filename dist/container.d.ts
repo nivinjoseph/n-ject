@@ -7,6 +7,7 @@ import { Scope } from "./scope.js";
  * This is the entry point for using the dependency injection framework.
  */
 export declare class Container extends BaseScope implements Registry {
+    private readonly _installers;
     private _myDisposePromise;
     /**
      * Creates a new instance of the Container.
@@ -69,7 +70,7 @@ export declare class Container extends BaseScope implements Registry {
      * @throws ObjectDisposedException if the container is disposed
      * @throws InvalidOperationException if the container is already bootstrapped
      */
-    bootstrap(): void;
+    bootstrap(): Promise<void>;
     /**
      * Disposes the container and its resources.
      * Cleans up all scopes and releases resources.

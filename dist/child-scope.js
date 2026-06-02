@@ -9,7 +9,7 @@ export class ChildScope extends BaseScope {
         given(componentRegistry, "componentRegistry").ensureHasValue().ensureIsType(ComponentRegistry);
         given(parentScope, "parentScope").ensureHasValue().ensureIsObject();
         super(ScopeType.Child, componentRegistry, parentScope);
-        this.bootstrap();
+        this.bootstrapInternal();
     }
     // cannot put this method in the base class due to circular reference issue
     createScope() {

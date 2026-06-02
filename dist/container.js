@@ -11,6 +11,7 @@ import { ScopeType } from "./scope-type.js";
  * This is the entry point for using the dependency injection framework.
  */
 export class Container extends BaseScope {
+    _installers = new Array();
     _myDisposePromise = null;
     /**
      * Creates a new instance of the Container.
@@ -82,7 +83,7 @@ export class Container extends BaseScope {
         if (this.isBootstrapped)
             throw new InvalidOperationException("install after bootstrap");
         given(componentInstaller, "componentInstaller").ensureHasValue();
-        componentInstaller.install(this);
+        this._installers.push(componentInstaller);
         return this;
     }
     /**
@@ -104,13 +105,14 @@ export class Container extends BaseScope {
      * @throws ObjectDisposedException if the container is disposed
      * @throws InvalidOperationException if the container is already bootstrapped
      */
-    bootstrap() {
+    async bootstrap() {
         if (this.isDisposed)
             throw new ObjectDisposedException(this);
         if (this.isBootstrapped)
             throw new InvalidOperationException("bootstrap after bootstrap");
+        await this._installers.forEachAsync((t) => t.install(this), 1);
         this.componentRegistry.verifyRegistrations();
-        super.bootstrap();
+        super.bootstrapInternal();
     }
     /**
      * Disposes the container and its resources.
